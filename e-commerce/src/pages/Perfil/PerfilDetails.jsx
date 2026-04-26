@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../componentes/Home/Header";
+import Header from "../../componentes/Header/Header";
 import { getMe, storeUser, getEndereco } from '../../services/userService';
-import "../../css/PerfilDetails.css";
+import "./PerfilDetails.css";
 
 const PerfilDetails = () => {
     const [user, setUser] = useState({

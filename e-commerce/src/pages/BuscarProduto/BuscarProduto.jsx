@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { buscarProdutosPorQuery } from "../services/produtoService";
-import Header from "../componentes/Home/Header";
-import ProductCard from "../componentes/Home/produtos/ProductCard";
-import "../css/produtoBuscado.css";
+import { buscarProdutosPorQuery } from "../../services/produtoService";
+import Header from "../../componentes/Header/Header";
+import ProductCard from "../../componentes/ProductCard/ProductCard";
+import "./buscarProduto.css";
 
 const CATEGORIAS = {
     1: "Hardware",

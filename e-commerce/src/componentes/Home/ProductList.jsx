@@ -1,4 +1,4 @@
-import ProductCard from "./produtos/ProductCard.jsx";
+import ProductCard from "../ProductCard/ProductCard.jsx";
 import { buscarProdutosPublicos } from "../../services/produtoService.js";
 import { useState, useEffect } from "react";
 

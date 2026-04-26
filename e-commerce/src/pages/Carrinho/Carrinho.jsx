@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { CarrinhoContext } from "../context/Carrinho/CarrinhoContext";
-import "../css/carrinho.css";
+import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
+import "./carrinho.css";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 

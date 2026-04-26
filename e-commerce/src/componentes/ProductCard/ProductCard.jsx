@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { CarrinhoContext } from "../../../context/Carrinho/CarrinhoContext";
-import { isAuthenticated } from "../../../services/auth";
+import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
+import { isAuthenticated } from "../../services/auth";
 import "./ProductCard.css";
 
 const ProductCard = ({

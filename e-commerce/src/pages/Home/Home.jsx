@@ -1,17 +1,17 @@
 import { React } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import Header from "../componentes/Home/Header.jsx";
-import Banner from "../componentes/Home/Banner.jsx";
-import Departamento from "../componentes/Home/Departamento.jsx";
-import ProductList from "../componentes/Home/ProductList.jsx";
+import Header from "../../componentes/Header/Header.jsx";
+import Banner from "../../componentes/Home/Banner.jsx";
+import Departamento from "../../componentes/Home/Departamento.jsx";
+import ProductList from "../../componentes/Home/ProductList.jsx";
 
-import hardware from "../assets/img/hardware.webp";
-import perifericos from "../assets/img/perifericos.png";
-import computadores from "../assets/img/computadores.png";
-import games from "../assets/img/games.png";
-import celularSmartPhone from "../assets/img/celularSmartPhone.png";
-import audio from "../assets/img/audio.png";
+import hardware from "../../assets/img/hardware.webp";
+import perifericos from "../../assets/img/perifericos.png";
+import computadores from "../../assets/img/computadores.png";
+import games from "../../assets/img/games.png";
+import celularSmartPhone from "../../assets/img/celularSmartPhone.png";
+import audio from "../../assets/img/audio.png";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 

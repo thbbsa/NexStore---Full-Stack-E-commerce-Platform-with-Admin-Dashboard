@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { buscarProdutoPorId } from "../services/produtoService";
-import Breadcrumb from "../componentes/BreadCrumb/Breadcrumb";
-import { CarrinhoContext } from "../context/Carrinho/CarrinhoContext";
-import { isAuthenticated } from "../services/auth";
-import "../css/ProdutoDetalhe.css";
+import { buscarProdutoPorId } from "../../services/produtoService";
+import Breadcrumb from "../../componentes/BreadCrumb/Breadcrumb";
+import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
+import { isAuthenticated } from "../../services/auth";
+import "./ProdutoDetalhe.css";
 
 const ProdutoDetalhe = () => {
     const { id } = useParams();

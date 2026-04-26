@@ -1,0 +1,25 @@
+/* =========================================================
+   BANNER
+========================================================= */
+.banner-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.banner {
+    width: 60%;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    transition: 0.3s ease;
+}
+
+.banner:hover {
+    transform: scale(1.01);
+}
+
+@media (max-width: 768px) {
+    .banner {
+        width: 95%;
+    }
+}

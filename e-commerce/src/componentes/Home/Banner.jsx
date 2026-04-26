@@ -1,12 +1,13 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import banner from "../../assets/img/banner.png";
-import "../../css/home.css";
+import "./banner.css";
 
 const Banner = () => {
-    return <div className="banner-container">
-        <img className="banner" src={banner} alt="" />
-    </div>
+    return (
+        <div className="banner-container">
+            <img className="banner" src={banner} alt="Banner promocional" />
+        </div>
+    );
 };
 
 export default Banner;

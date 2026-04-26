@@ -2,10 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from './pages/Home.jsx'
+import Home from './pages/Home/Home.jsx'
 import Login from './pages/Autentificação/Login.jsx'
 import Register from './pages/Autentificação/Registes.jsx'
-import DashBoard from './pages/DashBoard.jsx'
+import DashBoard from './pages/DashBoard/DashBoard.jsx'
 
 // componentes internos do dashboard
 import DashboardHome from './componentes/DashBoard/DashboardHome.jsx'
@@ -14,15 +14,17 @@ import CriarProduto from './componentes/DashBoard/Produtos/CriarProduto.jsx'
 import EditarProduto from './componentes/DashBoard/Produtos/EditarProduto.jsx'
 import ListaUsuarios from './componentes/DashBoard/Usuarios/ListaUsuarios.jsx'
 import EditarUsuario from './componentes/DashBoard/Usuarios/EditarUsuario.jsx'
-import ProductDetails from './pages/ProductDetails.jsx';
-import BuscarProduto from './pages/BuscarProduto.jsx';
-import Carrinho from './pages/Carrinho.jsx'
-import CheckoutIdentificacao from './pages/Checkoutidentificacao.jsx';
+import ProductDetails from './pages/ProductDetails/ProductDetails.jsx';
+import BuscarProduto from './pages/BuscarProduto/BuscarProduto.jsx';
+import Carrinho from './pages/Carrinho/Carrinho.jsx'
+import CheckoutIdentificacao from './pages/Checkout/Checkoutidentificacao.jsx';
 import Perfil from './pages/Perfil/PerfilDetails.jsx'
 
 import { CarrinhoProvider } from "./context/Carrinho/CarrinhoProvider.jsx";
 
 import ProtectedRoute from "./componentes/ProtectedRoute/ProtectedRoute.jsx";
+
+import "./css/index.css"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import AdminHeader from "../componentes/DashBoard/AdminHeader";
-import SideBar from "../componentes/DashBoard/SideBar";
+import AdminHeader from "../../componentes/DashBoard/AdminHeader";
+import SideBar from "../../componentes/DashBoard/SideBar";
 
 const DashBoard = () => {
     return (

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe, getEndereco } from "../services/userService";
+import { getMe, getEndereco } from "../../services/userService";
 import { useContext } from "react";
-import { CarrinhoContext } from "../context/Carrinho/CarrinhoContext";
-import "../css/CheckoutIdentificacao.css";
+import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
+import "./CheckoutIdentificacao.css";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
