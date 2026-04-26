@@ -1,0 +1,12 @@
+.admin-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.admin-header h2 {
+    font-size: 1.5rem;
+}
+
+.admin-profile {
+    cursor: pointer;
+}

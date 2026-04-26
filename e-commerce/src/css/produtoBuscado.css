@@ -1,0 +1,248 @@
+/* =========================================================
+   TOKENS
+========================================================= */
+:root {
+    --bg-primary: #021F2A;
+    --bg-secondary: #042A37;
+    --bg-card: #052E3F;
+    --border-color: #064757;
+    --accent: #00E5CF;
+    --accent-hover: #1FF2E0;
+    --accent-dim: rgba(0, 229, 207, 0.1);
+    --text-primary: #D9E7EC;
+    --text-muted: #7AA4B3;
+    --text-label: #5A8FA0;
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+.bp-page {
+    background-color: var(--bg-primary);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-primary);
+    padding-bottom: 80px;
+}
+
+.bp-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* =========================================================
+   HEADING
+========================================================= */
+.bp-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease both;
+}
+
+.bp-heading-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.bp-heading-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.bp-heading-count {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.bp-heading-count strong {
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+}
+
+/* =========================================================
+   BARRA DE FILTROS
+========================================================= */
+.bp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    animation: fadeUp 0.4s ease 0.05s both;
+}
+
+.bp-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bp-filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-label);
+    white-space: nowrap;
+}
+
+.bp-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 32px 8px 12px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237AA4B3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.bp-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.1);
+}
+
+.bp-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.bp-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-color);
+}
+
+/* =========================================================
+   GRID DE PRODUTOS
+========================================================= */
+.bp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    animation: fadeUp 0.4s ease 0.1s both;
+}
+
+/* =========================================================
+   ESTADO VAZIO
+========================================================= */
+.bp-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 14px;
+    text-align: center;
+}
+
+.bp-empty-icon {
+    font-family: 'Material Symbols Rounded';
+    font-size: 56px;
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 48;
+    font-weight: normal;
+    font-style: normal;
+    color: var(--border-color);
+    line-height: 1;
+    user-select: none;
+}
+
+.bp-empty h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.bp-empty p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.bp-empty-btn {
+    padding: 11px 24px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent);
+    color: #021F2A;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.bp-empty-btn:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 4px 18px rgba(0, 229, 207, 0.3);
+    transform: translateY(-1px);
+}
+
+.bp-empty-btn .msymbol {
+    font-family: 'Material Symbols Rounded';
+    font-size: 16px;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 600px) {
+    .bp-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .bp-filters {
+        gap: 10px;
+        padding: 14px 16px;
+    }
+
+    .bp-divider { display: none; }
+}
+
+@media (max-width: 380px) {
+    .bp-grid {
+        grid-template-columns: 1fr;
+    }
+}

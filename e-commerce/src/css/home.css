@@ -1,0 +1,225 @@
+/* =========================================================
+   VARIÁVEIS GLOBAIS
+========================================================= */
+:root {
+    --bg-primary: #021F2A;
+    --bg-secondary: #042A37;
+    --border-color: #064757;
+
+    --accent: #00E5CF;
+    --accent-hover: #1FF2E0;
+
+    --text-primary: #D9E7EC;
+    --text-muted: #7AA4B3;
+
+    --radius: 16px;
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.25);
+    --shadow-hover: 0 8px 30px rgba(0, 229, 207, 0.15);
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.header {
+    background: var(--bg-secondary) !important;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.logo {
+    width: 140px;
+    transition: 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.header span {
+    font-weight: 500;
+}
+/* SEARCH BAR */
+.search-bar {
+    width: 100%;
+    margin-left: 0; /* cuidado com margin fixa */
+}
+
+.search-bar input {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 15px;
+    transition: 0.2s ease;
+}
+
+.search-bar input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0, 229, 207, 0.2);
+}
+
+.search-bar input::placeholder {
+    color: var(--text-muted);
+}
+
+.input-search {
+    background: var(--accent);
+    border: none;
+    color: #021F2A;
+    padding: 0 18px;
+    transition: 0.2s ease;
+}
+
+.input-search:hover {
+    background: var(--accent-hover);
+}
+
+.search-button {
+    background: none;
+    color: #303030;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+
+/* Ícones */
+.header .btn-link {
+    color: var(--text-primary) !important;
+    font-size: 22px;
+    transition: 0.25s ease;
+}
+
+.header .btn-link:hover {
+    color: var(--accent) !important;
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   BANNER
+========================================================= */
+.banner-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.banner {
+    width: 60%;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    transition: 0.3s ease;
+}
+
+.banner:hover {
+    transform: scale(1.01);
+}
+
+/* =========================================================
+   DEPARTAMENTOS
+========================================================= */
+.departamentos-container {
+    padding: 60px 0;
+}
+
+.departamento-item {
+    text-align: center;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.departamento-item:hover {
+    transform: translateY(-6px);
+}
+
+.departamento-img {
+    width: 140px;
+    transition: 0.3s ease;
+}
+
+.departamento-item:hover .departamento-img {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 12px var(--accent));
+}
+
+.departamento-nome {
+    font-size: 1.2rem;
+    margin-top: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    transition: 0.3s ease;
+}
+
+.departamento-item:hover .departamento-nome {
+    color: var(--accent-hover);
+}
+
+/* =========================================================
+   PRODUTO CARD
+========================================================= */
+.product-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: 0.3s ease;
+    box-shadow: var(--shadow-soft);
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+.product-card img {
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+    transition: 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+.product-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+@media (max-width: 768px) {
+    .logo {
+        width: 90px;
+    }
+
+    .search-bar {
+        margin-left: 0;
+        margin-top: 15px;
+    }
+
+    .banner {
+        width: 95%;
+    }
+
+    .departamento-img {
+        width: 110px;
+    }
+}

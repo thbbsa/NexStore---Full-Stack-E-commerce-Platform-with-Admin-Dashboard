@@ -1,0 +1,1602 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #021F2A;
+    --bg2: #042A37;
+    --bg3: #052E3F;
+    --border: #064757;
+    --accent: #00E5CF;
+    --accent2: #1FF2E0;/* =========================================================
+   TOKENS
+========================================================= */
+:root {
+    --bg: #021F2A;
+    --bg2: #042A37;
+    --bg3: #052E3F;
+    --border: #064757;
+    --accent: #00E5CF;
+    --accent2: #1FF2E0;
+    --accent-dim: rgba(0, 229, 207, 0.1);
+    --text: #D9E7EC;
+    --muted: #7AA4B3;
+    --label: #5A8FA0;
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+.ck-page {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    padding: 40px 24px 80px;
+}
+
+.ck-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* =========================================================
+   STEPPER
+========================================================= */
+.ck-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 36px;
+    grid-column: 1 / -1;
+}
+
+.ck-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.ck-step + .ck-step { margin-left: 72px; }
+
+.ck-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: calc(50% + 18px);
+    width: calc(100% - 4px);
+    min-width: 52px;
+    height: 1px;
+    background: var(--border);
+}
+
+.ck-step.done:not(:last-child)::after {
+    background: var(--accent);
+    opacity: 0.4;
+}
+
+.ck-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    z-index: 1;
+    transition: all 0.2s;
+}
+
+.ck-step.active .ck-step-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #021F2A;
+    box-shadow: 0 0 0 4px rgba(0, 229, 207, 0.15);
+}
+
+.ck-step.done .ck-step-num {
+    background: rgba(0, 229, 207, 0.15);
+    border-color: rgba(0, 229, 207, 0.3);
+    color: var(--accent);
+}
+
+.ck-step-label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.ck-step.active .ck-step-label {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.ck-step.done .ck-step-label {
+    color: rgba(0, 229, 207, 0.5);
+}
+
+/* =========================================================
+   LEFT COLUMN
+========================================================= */
+.ck-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+.ck-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+}
+
+.ck-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ck-card-head-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(0, 229, 207, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ck-card-head-icon .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 17px;
+    color: var(--accent);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    user-select: none;
+}
+
+.ck-card-head h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-card-head p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1px;
+}
+
+.ck-card-body {
+    padding: 20px 22px;
+}
+
+/* =========================================================
+   DADOS DO USUÁRIO
+========================================================= */
+.ck-user-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ck-user-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ck-user-field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--label);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ck-user-field label .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 11px;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    color: var(--muted);
+}
+
+.ck-user-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.ck-user-value.locked {
+    color: var(--muted);
+    letter-spacing: 0.05em;
+}
+
+/* =========================================================
+   ENDEREÇOS
+========================================================= */
+.ck-addr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.ck-addr-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.ck-addr-card:hover {
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-addr-card.selected {
+    border-color: var(--accent);
+    background: rgba(0, 229, 207, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.08);
+}
+
+.ck-addr-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+}
+
+.ck-addr-card.selected .ck-addr-radio {
+    border-color: var(--accent);
+}
+
+.ck-addr-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ck-addr-card.selected .ck-addr-radio-dot {
+    transform: scale(1);
+}
+
+.ck-addr-info { flex: 1; }
+
+.ck-addr-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.ck-addr-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--accent-dim);
+    border: 1px solid rgba(0, 229, 207, 0.2);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+}
+
+.ck-addr-main {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.ck-addr-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.ck-addr-new {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    background: transparent;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ck-addr-new:hover {
+    border-color: rgba(0, 229, 207, 0.35);
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.ck-addr-new .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+/* =========================================================
+   FORMULÁRIO NOVO ENDEREÇO
+========================================================= */
+.ck-new-form {
+    margin-top: 14px;
+    padding: 18px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    animation: fadeUp 0.3s ease both;
+}
+
+.ck-new-form .span2 {
+    grid-column: span 2;
+}
+
+.ck-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ck-form-field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--label);
+}
+
+.ck-form-input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ck-form-input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.1);
+}
+
+.ck-form-input-wrap:focus-within .ms {
+    color: var(--accent);
+}
+
+.ck-form-input-wrap .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 15px;
+    padding-left: 10px;
+    color: var(--muted);
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.ck-form-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px 10px 7px;
+}
+
+.ck-form-input::placeholder {
+    color: var(--muted);
+    opacity: 0.5;
+}
+
+.ck-form-save-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #021F2A;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ck-form-save-btn:hover {
+    background: var(--accent2);
+    box-shadow: 0 4px 14px rgba(0, 229, 207, 0.25);
+}
+
+/* =========================================================
+   TIPO DE ENTREGA
+========================================================= */
+.ck-delivery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ck-delivery-opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.ck-delivery-opt:hover {
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-delivery-opt.selected {
+    border-color: var(--accent);
+    background: rgba(0, 229, 207, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.08);
+}
+
+.ck-delivery-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-icon {
+    background: var(--accent-dim);
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-delivery-icon .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    color: var(--muted);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-icon .ms {
+    color: var(--accent);
+}
+
+.ck-delivery-info { flex: 1; }
+
+.ck-delivery-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-delivery-prazo {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.ck-delivery-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.ck-delivery-price.free {
+    color: #00e596;
+}
+
+.ck-delivery-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-radio {
+    border-color: var(--accent);
+}
+
+.ck-delivery-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ck-delivery-opt.selected .ck-delivery-radio-dot {
+    transform: scale(1);
+}
+
+/* =========================================================
+   RESUMO (coluna direita)
+========================================================= */
+.ck-summary {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: sticky;
+    top: 24px;
+    animation: fadeUp 0.4s ease 0.1s both;
+}
+
+.ck-summary-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ck-summary-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.ck-summary-body {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ck-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ck-summary-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ck-summary-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ck-summary-item-info { flex: 1; }
+
+.ck-summary-item-name {
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.ck-summary-item-qty {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.ck-summary-item-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-summary-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+.ck-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ck-summary-row span:first-child {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.ck-summary-row span:last-child {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.ck-summary-row.total span:first-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--label);
+}
+
+.ck-summary-row.total span:last-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.ck-summary-footer {
+    padding: 14px 20px 18px;
+    border-top: 1px solid var(--border);
+}
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+.ck-btn-next {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent);
+    color: #021F2A;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.ck-btn-next:hover {
+    background: var(--accent2);
+    box-shadow: 0 4px 20px rgba(0, 229, 207, 0.3);
+    transform: translateY(-1px);
+}
+
+.ck-btn-next .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+.ck-btn-back {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ck-btn-back:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+}
+
+.ck-btn-back .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 15px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+/* =========================================================
+   MATERIAL SYMBOLS
+========================================================= */
+.ms {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    user-select: none;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 780px) {
+    .ck-wrap { grid-template-columns: 1fr; }
+    .ck-summary { position: static; }
+    .ck-step + .ck-step { margin-left: 40px; }
+    .ck-step-label { display: none; }
+    .ck-user-grid { grid-template-columns: 1fr; }
+    .ck-new-form { grid-template-columns: 1fr; }
+    .ck-new-form .span2 { grid-column: span 1; }
+}
+    --accent-dim: rgba(0, 229, 207, 0.1);
+    --text: #D9E7EC;
+    --muted: #7AA4B3;
+    --label: #5A8FA0;
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+.ck-page {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    padding: 40px 24px 80px;
+}
+
+.ck-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ── STEPPER ── */
+.ck-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 36px;
+    grid-column: 1 / -1;
+}
+
+.ck-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.ck-step+.ck-step {
+    margin-left: 72px;
+}
+
+.ck-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: calc(50% + 18px);
+    width: calc(100% - 4px);
+    min-width: 52px;
+    height: 1px;
+    background: var(--border);
+}
+
+.ck-step.done:not(:last-child)::after {
+    background: var(--accent);
+    opacity: 0.4;
+}
+
+.ck-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    z-index: 1;
+    transition: all 0.2s;
+}
+
+.ck-step.active .ck-step-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #021F2A;
+    box-shadow: 0 0 0 4px rgba(0, 229, 207, 0.15);
+}
+
+.ck-step.done .ck-step-num {
+    background: rgba(0, 229, 207, 0.15);
+    border-color: rgba(0, 229, 207, 0.3);
+    color: var(--accent);
+}
+
+.ck-step-label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.ck-step.active .ck-step-label {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.ck-step.done .ck-step-label {
+    color: rgba(0, 229, 207, 0.5);
+}
+
+/* ── LEFT COLUMN ── */
+.ck-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── CARD ── */
+.ck-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+}
+
+.ck-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ck-card-head-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(0, 229, 207, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ck-card-head-icon .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 17px;
+    color: var(--accent);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    user-select: none;
+}
+
+.ck-card-head h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-card-head p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1px;
+}
+
+.ck-card-body {
+    padding: 20px 22px;
+}
+
+/* ── DADOS DO USUÁRIO ── */
+.ck-user-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ck-user-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ck-user-field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--label);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ck-user-field label .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 11px;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    color: var(--muted);
+}
+
+.ck-user-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.ck-user-value.locked {
+    color: var(--muted);
+    letter-spacing: 0.05em;
+}
+
+/* ── ENDEREÇOS ── */
+.ck-addr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.ck-addr-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.ck-addr-card:hover {
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-addr-card.selected {
+    border-color: var(--accent);
+    background: rgba(0, 229, 207, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.08);
+}
+
+.ck-addr-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+}
+
+.ck-addr-card.selected .ck-addr-radio {
+    border-color: var(--accent);
+}
+
+.ck-addr-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ck-addr-card.selected .ck-addr-radio-dot {
+    transform: scale(1);
+}
+
+.ck-addr-info {
+    flex: 1;
+}
+
+.ck-addr-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.ck-addr-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--accent-dim);
+    border: 1px solid rgba(0, 229, 207, 0.2);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+}
+
+.ck-addr-main {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.ck-addr-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.ck-addr-new {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    background: transparent;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ck-addr-new:hover {
+    border-color: rgba(0, 229, 207, 0.35);
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.ck-addr-new .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+/* Formulário novo endereço */
+.ck-new-form {
+    margin-top: 14px;
+    padding: 18px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    animation: fadeUp 0.3s ease both;
+}
+
+.ck-new-form .span2 {
+    grid-column: span 2;
+}
+
+.ck-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ck-form-field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--label);
+}
+
+.ck-form-input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ck-form-input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.1);
+}
+
+.ck-form-input-wrap:focus-within .ms {
+    color: var(--accent);
+}
+
+.ck-form-input-wrap .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 15px;
+    padding-left: 10px;
+    color: var(--muted);
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.ck-form-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px 10px 7px;
+}
+
+.ck-form-input::placeholder {
+    color: var(--muted);
+    opacity: 0.5;
+}
+
+/* ── ENTREGA ── */
+.ck-delivery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ck-delivery-opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.ck-delivery-opt:hover {
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-delivery-opt.selected {
+    border-color: var(--accent);
+    background: rgba(0, 229, 207, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 229, 207, 0.08);
+}
+
+.ck-delivery-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-icon {
+    background: var(--accent-dim);
+    border-color: rgba(0, 229, 207, 0.25);
+}
+
+.ck-delivery-icon .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    color: var(--muted);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-icon .ms {
+    color: var(--accent);
+}
+
+.ck-delivery-info {
+    flex: 1;
+}
+
+.ck-delivery-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-delivery-prazo {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.ck-delivery-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.ck-delivery-price.free {
+    color: #00e596;
+}
+
+.ck-delivery-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+}
+
+.ck-delivery-opt.selected .ck-delivery-radio {
+    border-color: var(--accent);
+}
+
+.ck-delivery-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ck-delivery-opt.selected .ck-delivery-radio-dot {
+    transform: scale(1);
+}
+
+/* ── RIGHT COLUMN (resumo) ── */
+.ck-summary {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: sticky;
+    top: 24px;
+    animation: fadeUp 0.4s ease 0.1s both;
+}
+
+.ck-summary-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ck-summary-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.ck-summary-body {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ck-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ck-summary-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.ck-summary-item-info {
+    flex: 1;
+}
+
+.ck-summary-item-name {
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.ck-summary-item-qty {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.ck-summary-item-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ck-summary-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+.ck-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ck-summary-row span:first-child {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.ck-summary-row span:last-child {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.ck-summary-row.total span:first-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--label);
+}
+
+.ck-summary-row.total span:last-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.ck-summary-footer {
+    padding: 14px 20px 18px;
+    border-top: 1px solid var(--border);
+}
+
+.ck-btn-next {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent);
+    color: #021F2A;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.ck-btn-next:hover {
+    background: var(--accent2);
+    box-shadow: 0 4px 20px rgba(0, 229, 207, 0.3);
+    transform: translateY(-1px);
+}
+
+.ck-btn-next .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 18px;
+    font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+.ck-btn-back {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ck-btn-back:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+}
+
+.ck-btn-back .ms {
+    font-family: 'Material Symbols Rounded';
+    font-size: 15px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 780px) {
+    .ck-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .ck-summary {
+        position: static;
+    }
+
+    .ck-step+.ck-step {
+        margin-left: 40px;
+    }
+
+    .ck-step-label {
+        display: none;
+    }
+
+    .ck-user-grid {
+        grid-template-columns: 1fr;
+    }
+}
