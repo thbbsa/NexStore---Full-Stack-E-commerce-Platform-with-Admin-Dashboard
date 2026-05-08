@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../componentes/Header/Header";
-import { getMe, storeUser, getEndereco } from '../../services/userService';
+import { getMe, storeUser, getEndereco, UpdateEndereco } from '../../services/userService';
 import "./PerfilDetails.css";
 
 const PerfilDetails = () => {
@@ -8,7 +8,7 @@ const PerfilDetails = () => {
         Id: '', Nome: '', Username: '', Email: '', Telefone: '', CPF: ''
     });
 
-    const [enderecos, setEnderecos] = useState({
+    const [endereco, setEndereco] = useState({
         Rua: '', Numero: '', Complemento: '', Bairro: '',
         Cidade: '', Estado: '', CEP: '', Principal: null
     });
@@ -28,8 +28,13 @@ const PerfilDetails = () => {
 
                 setUser(data.user || data);
                 setOriginalUser(data.user || data);
-                setEnderecos(enderecos);
-                setOriginalEndereco(enderecos);
+
+                const enderecoPrincipal = Array.isArray(enderecos)
+                    ? enderecos.find(endereco => endereco.Principal)
+                    : null;
+
+                setOriginalEndereco(enderecoPrincipal || {});
+                setEndereco(enderecoPrincipal || {});
 
             } catch (error) {
                 console.error("Erro ao carregar info do usuário:", error);
@@ -67,11 +72,11 @@ const PerfilDetails = () => {
         return value
     }
 
-    const verificarCamposMudados = (original, atual) => {
+    const verificarCamposMudados = (original, atual, id) => {
         const mudancas = {};
 
         for (const key in original) {
-            if (key === "Id") {
+            if (key === id) {
                 mudancas[key] = original[key]; // sempre envie o Id para identificação
                 continue;
             }
@@ -90,14 +95,14 @@ const PerfilDetails = () => {
         setUser(prev => ({ ...prev, [name]: value }));
     };
 
-     const handleChangeEndereco = (e) => {
+    const handleChangeEndereco = (e) => {
         const { name, value } = e.target;
-        setEnderecos(prev => ({ ...prev, [name]: value }));
+        setEndereco(prev => ({ ...prev, [name]: value }));
     };
 
     const handleCancel = () => {
         setUser(originalUser);
-        setEnderecos(originalEndereco);
+        setEndereco(originalEndereco);
         setMessage("");
         setStatus("");
         setIsEditing(false);
@@ -105,13 +110,19 @@ const PerfilDetails = () => {
 
     const handleEditProfile = async () => {
         if (isEditing) {
-            const isEqual = JSON.stringify(user) === JSON.stringify(originalUser);
-            if (isEqual) {
+            const isEqualUser =
+                JSON.stringify(user) === JSON.stringify(originalUser);
+
+            const isEqualEndereco =
+                JSON.stringify(endereco) === JSON.stringify(originalEndereco);
+
+            if (isEqualUser && isEqualEndereco) {
                 setMessage("Nenhuma alteração feita.");
                 setStatus("error");
                 setIsEditing(false);
                 return;
             }
+
             try {
                 const userToSend = {
                     ...user,
@@ -119,31 +130,95 @@ const PerfilDetails = () => {
                     Telefone: user.Telefone.replace(/\D/g, '')
                 };
 
-                const camposMudados = verificarCamposMudados(originalUser, userToSend);
+                const camposMudadosUser = verificarCamposMudados(
+                    originalUser,
+                    userToSend,
+                    "Id"
+                );
 
-                if (Object.keys(camposMudados).length === 0) {
+                const camposMudadosEndereco = verificarCamposMudados(
+                    originalEndereco,
+                    endereco,
+                    "Id_endereco"
+                );
+
+                const semMudancaUser =
+                    Object.keys(camposMudadosUser).length === 1;
+
+                const semMudancaEndereco =
+                    Object.keys(camposMudadosEndereco).length === 1;
+
+                if (semMudancaUser && semMudancaEndereco) {
                     setMessage("Nenhuma alteração feita.");
                     setStatus("error");
                     setIsEditing(false);
                     return;
                 }
 
-                const response = await storeUser(camposMudados);
+                let userResponse = null;
+                let enderecoResponse = null;
 
-                if (response.ok) {
-                    const result = await response.json();
-                    setMessage(result.message);
+                if (!semMudancaUser) {
+                    userResponse = await storeUser(camposMudadosUser);
+                }
+
+                if (!semMudancaEndereco) {
+                    enderecoResponse = await UpdateEndereco(
+                        camposMudadosEndereco
+                    );
+                }
+
+                const userSuccess = userResponse?.ok;
+                const enderecoSuccess = enderecoResponse?.ok;
+
+                if (userSuccess || enderecoSuccess) {
+
+                    let result = null;
+
+                    if (userResponse) {
+                        result = await userResponse.json();
+                    } else if (enderecoResponse) {
+                        result = await enderecoResponse.json();
+                    }
+
+                    setMessage(result?.message || "Perfil atualizado.");
                     setStatus("success");
+
                     setOriginalUser(user);
+                    setOriginalEndereco(endereco);
+
                     setIsEditing(false);
+
                 } else {
-                    const errorData = await response.json();
-                    setMessage(errorData.message);
+
+                    let errorData = null;
+
+                    if (userResponse && !userResponse.ok) {
+                        errorData = await userResponse.json();
+                    } else if (
+                        enderecoResponse &&
+                        !enderecoResponse.ok
+                    ) {
+                        errorData = await enderecoResponse.json();
+                    }
+
+                    setMessage(
+                        errorData?.message || "Erro ao atualizar perfil."
+                    );
+
                     setStatus("error");
                 }
+
             } catch (error) {
-                console.error("Erro de rede ao atualizar perfil:", error);
+                console.error(
+                    "Erro de rede ao atualizar perfil:",
+                    error
+                );
+
+                setMessage("Erro de rede ao atualizar perfil.");
+                setStatus("error");
             }
+
         } else {
             setMessage("");
             setStatus("");
@@ -151,12 +226,11 @@ const PerfilDetails = () => {
         }
     };
 
-    console.log("enderecos", enderecos);
-
     // Iniciais para o avatar
     const initials = user.Nome
         ? user.Nome.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
         : user.Username?.slice(0, 2).toUpperCase() || "??";
+
 
     return (
         <div className="perfil-page">
@@ -271,100 +345,102 @@ const PerfilDetails = () => {
                     {/* Seção: Endereço */}
                     <div className="perfil-section">
                         <div className="perfil-section-title">Endereço</div>
-                        <div className="perfil-grid">
+                        {endereco ? (
+                            <div className="perfil-grid">
 
-                            <div className="perfil-field span2">
-                                <label>Rua</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Rua"
-                                    value={enderecos.Rua ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="Nome da rua"
-                                />
+                                <div className="perfil-field span2">
+                                    <label>Rua</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Rua"
+                                        value={endereco.Rua ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="Nome da rua"
+                                    />
+                                </div>
+
+                                <div className="perfil-field">
+                                    <label>Número</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Numero"
+                                        value={endereco.Numero ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="123"
+                                    />
+                                </div>
+
+                                <div className="perfil-field">
+                                    <label>Complemento</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Complemento"
+                                        value={endereco.Complemento ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="Apto, bloco..."
+                                    />
+                                </div>
+
+                                <div className="perfil-field span2">
+                                    <label>Bairro</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Bairro"
+                                        value={endereco.Bairro ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="Seu bairro"
+                                    />
+                                </div>
+
+                                <div className="perfil-field">
+                                    <label>Cidade</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Cidade"
+                                        value={endereco.Cidade ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="São Paulo"
+                                    />
+                                </div>
+
+                                <div className="perfil-field">
+                                    <label>Estado</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="Estado"
+                                        value={endereco.Estado ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="SP"
+                                    />
+                                </div>
+
+                                <div className="perfil-field">
+                                    <label>CEP</label>
+                                    <input
+                                        className="perfil-input"
+                                        type="text"
+                                        name="CEP"
+                                        value={endereco.Cep ?? ''}
+                                        onChange={handleChangeEndereco}
+                                        disabled={!isEditing}
+                                        placeholder="00000-000"
+                                    />
+                                </div>
+
                             </div>
-
-                            <div className="perfil-field">
-                                <label>Número</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Numero"
-                                    value={enderecos.Numero ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="123"
-                                />
-                            </div>
-
-                            <div className="perfil-field">
-                                <label>Complemento</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Complemento"
-                                    value={enderecos.Complemento ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="Apto, bloco..."
-                                />
-                            </div>
-
-                            <div className="perfil-field span2">
-                                <label>Bairro</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Bairro"
-                                    value={enderecos.Bairro ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="Seu bairro"
-                                />
-                            </div>
-
-                            <div className="perfil-field">
-                                <label>Cidade</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Cidade"
-                                    value={enderecos.Cidade ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="São Paulo"
-                                />
-                            </div>
-
-                            <div className="perfil-field">
-                                <label>Estado</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="Estado"
-                                    value={enderecos.Estado ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="SP"
-                                />
-                            </div>
-
-                            <div className="perfil-field">
-                                <label>CEP</label>
-                                <input
-                                    className="perfil-input"
-                                    type="text"
-                                    name="CEP"
-                                    value={enderecos.Cep ?? ''}
-                                    onChange={handleChangeEndereco}
-                                    disabled={!isEditing}
-                                    placeholder="00000-000"
-                                />
-                            </div>
-
-                        </div>
+                        ) : null}
                     </div>
 
                     {/* Alert */}

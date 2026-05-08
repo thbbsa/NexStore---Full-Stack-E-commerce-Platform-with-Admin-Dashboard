@@ -157,30 +157,80 @@ class User {
     }
 
     static async becomePrincipal(idEndereco) {
-    try {
-        const pool = await conectar();
+        try {
+            const pool = await conectar();
 
-        const result = await pool.request()
-            .input("Id_endereco", sql.Int, idEndereco)
-            .query("SELECT UsuarioId FROM Endereco WHERE Id_endereco = @Id_endereco");
+            const result = await pool.request()
+                .input("Id_endereco", sql.Int, idEndereco)
+                .query("SELECT UsuarioId FROM Endereco WHERE Id_endereco = @Id_endereco");
 
-        const usuarioId = result.recordset[0]?.UsuarioId;
+            const usuarioId = result.recordset[0]?.UsuarioId;
 
-        if (!usuarioId) return;
+            if (!usuarioId) return;
 
-        await pool.request()
-            .input("Id_endereco", sql.Int, idEndereco)
-            .input("UsuarioId", sql.Int, usuarioId)
-            .query(`
+            await pool.request()
+                .input("Id_endereco", sql.Int, idEndereco)
+                .input("UsuarioId", sql.Int, usuarioId)
+                .query(`
                 UPDATE Endereco
                 SET Principal = CASE WHEN Id_endereco = @Id_endereco THEN 1 ELSE 0 END
                 WHERE UsuarioId = @UsuarioId
             `);
 
-    } catch (error) {
-        console.log("Erro ao atualizar endereço:", error);
+        } catch (error) {
+            console.log("Erro ao atualizar endereço:", error);
+        }
     }
-}
-}
 
+    static async updateEndereco(idEndereco, updates) {
+        try {
+            const pool = await conectar();
+            const request = pool.request();
+            request.input("Id_endereco", sql.Int, idEndereco);
+
+            let query = "UPDATE Endereco SET ";
+
+            const fields = [];
+            
+            if (updates.Rua !== undefined) {
+                request.input("Rua", sql.VarChar(150), updates.Rua);
+                fields.push("Rua = @Rua");
+            }
+
+            if (updates.Numero !== undefined) {
+                request.input("Numero", sql.VarChar(10), updates.Numero);
+                fields.push("Numero = @Numero");
+            }
+            if (updates.Complemento !== undefined) {
+                request.input("Complemento", sql.VarChar(100), updates.Complemento);
+                fields.push("Complemento = @Complemento");
+            }
+            if (updates.Bairro !== undefined) {
+                request.input("Bairro", sql.VarChar(100), updates.Bairro);
+                fields.push("Bairro = @Bairro");
+            }
+            if (updates.Cidade !== undefined) {
+                request.input("Cidade", sql.VarChar(100), updates.Cidade);
+                fields.push("Cidade = @Cidade");
+            }
+            if (updates.Estado !== undefined) {
+                request.input("Estado", sql.VarChar(100), updates.Estado);
+                fields.push("Estado = @Estado");
+            }
+            if (updates.Cep !== undefined) {
+                request.input("Cep", sql.Char(10), updates.Cep);
+                fields.push("Cep = @Cep");
+            }
+
+            query += fields.join(", ");
+            query += " WHERE Id_endereco = @Id_endereco";
+
+            const result = await request.query(query);
+            return result;
+        } catch (error) {
+            console.log("Erro ao atualizar endereço:", error);
+        }
+    }
+
+}
 module.exports = User;

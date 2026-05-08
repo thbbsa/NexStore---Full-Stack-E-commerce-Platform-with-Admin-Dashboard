@@ -195,6 +195,7 @@ exports.getEndereco = async (req, res) => {
 exports.updateEndereco = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
+    console.log(updates)
     const { Principal} = updates;
 
     try {
@@ -206,11 +207,11 @@ exports.updateEndereco = async (req, res) => {
             res.status(200).json({ message: "Endereço setado como principal", endereco });
         }
         
-        // const endereco = await User.updateEndereco(id, updates);
+        const endereco = await User.updateEndereco(id, updates);
 
-        // if (!endereco) {
-        //     return res.status(404).json({ message: "Endereço não encontrado." });
-        // }
+        if (!endereco) {
+            return res.status(404).json({ message: "Endereço não encontrado." });
+        }
 
         res.status(200).json({ message: "Endereço atualizado com sucesso!" });
         
