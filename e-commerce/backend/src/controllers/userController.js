@@ -155,9 +155,11 @@ exports.createEndereco = async (req, res) => {
 
         const { logradouro, numero, complemento, bairro, localidade, estado, cep } = req.body;
 
+        console.log(req.body)
+
         const endereco = await User.getEndereco(userId);
 
-        if (endereco.length >= 4) {
+        if (endereco.length >= 20) {
             return res.status(400).json({ message: "Limite de endereços atingido. Exclua um endereço para adicionar outro." });
         }
         
@@ -195,7 +197,6 @@ exports.getEndereco = async (req, res) => {
 exports.updateEndereco = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
-    console.log(updates)
     const { Principal} = updates;
 
     try {

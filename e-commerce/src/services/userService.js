@@ -41,7 +41,7 @@ export async function logout() {
   });
 }
 
-export async function storeEndereco(endereco, numero, complemento) {
+export async function storeEndereco(endereco, numero = "", complemento = "" ) {
   return await fetch(`${API_URL}/criar-endereco`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
