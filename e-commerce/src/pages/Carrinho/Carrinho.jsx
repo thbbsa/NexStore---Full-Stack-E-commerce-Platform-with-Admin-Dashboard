@@ -133,10 +133,10 @@ const Carrinho = () => {
                         </div>
 
                         <div className="cart-actions">
-                            <button className="cart-btn-checkout" onClick={() => navigate("/identificacao")}>
+                            <button className="cart-btn-checkout" onClick={() => navigate("/checkout/identificacao")}>
                                 <span className="msymbol">bolt</span>
                                 Finalizar Compra
-                            </button>
+                            </button>   
                             <button
                                 className="cart-btn-continue"
                                 onClick={() => navigate("/")}

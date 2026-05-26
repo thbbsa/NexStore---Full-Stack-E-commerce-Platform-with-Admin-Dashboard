@@ -18,6 +18,8 @@ import ProductDetails from './pages/ProductDetails/ProductDetails.jsx';
 import BuscarProduto from './pages/BuscarProduto/BuscarProduto.jsx';
 import Carrinho from './pages/Carrinho/Carrinho.jsx'
 import CheckoutIdentificacao from './pages/Checkout/Checkoutidentificacao.jsx';
+import CheckoutPagamento from './pages/CheckoutPagamento/CheckoutPagamento.jsx';
+import CheckoutConcluido from './pages/CheckoutConfirmacao/CheckoutConfirmacao.jsx';
 import Perfil from './pages/Perfil/PerfilDetails.jsx'
 
 import { CarrinhoProvider } from "./context/Carrinho/CarrinhoProvider.jsx";
@@ -32,12 +34,13 @@ createRoot(document.getElementById('root')).render(
     <CarrinhoProvider>
       <Router>
         <Routes>
-
           {/* públicas */}
           <Route path="/produtos/:id" element={<ProductDetails />} />
           <Route path="/produtos" element={<BuscarProduto />} />
           <Route path="/carrinho" element={<Carrinho />} />
-          <Route path="/identificacao" element={<CheckoutIdentificacao />} />
+          <Route path="/checkout/identificacao" element={<CheckoutIdentificacao />} />
+          <Route path="/checkout/pagamento" element={<CheckoutPagamento />} />
+          <Route path="/checkout/concluido" element={<CheckoutConcluido />} />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

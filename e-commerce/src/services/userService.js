@@ -9,8 +9,8 @@ export async function getMe() {
   const data = await response.json();
 
   if (response.status === 401) {
-      return null; // evita erro feio
-    }
+    return null; // evita erro feio
+  }
 
   if (!response.ok) throw data;
 
@@ -41,7 +41,7 @@ export async function logout() {
   });
 }
 
-export async function storeEndereco(endereco, numero = "", complemento = "" ) {
+export async function storeEndereco(endereco, numero = "", complemento = "") {
   return await fetch(`${API_URL}/criar-endereco`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -50,7 +50,7 @@ export async function storeEndereco(endereco, numero = "", complemento = "" ) {
   })
 }
 
-export async function getEndereco({signal}) {
+export async function getEndereco({ signal }) {
   return await fetch(`${API_URL}/meu-endereco`, {
     method: "GET",
     credentials: "include",
@@ -65,6 +65,21 @@ export async function UpdateEndereco(endereco) {
     credentials: "include",
     body: JSON.stringify(endereco)
   })
+}
+
+export async function storePedido(payload) {
+  const response = await fetch(`${API_URL}/criar-pedido`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) throw data;
+
+  return data;
 }
 
 

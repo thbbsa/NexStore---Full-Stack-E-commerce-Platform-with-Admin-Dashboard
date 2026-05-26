@@ -8,6 +8,9 @@ const {
   buscarProduto,
   atualizarProduto,
 } = require("../controllers/produtoController");
+
+const { criarPedido } = require('../controllers/PedidoController')
+
 const upload = require("../middleware/upload");
 
 const router = express.Router();
@@ -38,4 +41,9 @@ router.get("/produtos/:id", buscarProduto)
 
 router.patch("/produtos/:id", atualizarProduto);
 
+
+router.post("/criar-pedido", criarPedido)
+
 module.exports = router;
+
+
