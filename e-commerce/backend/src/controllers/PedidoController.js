@@ -1,9 +1,11 @@
 const Pedido = require("../models/Pedido");
 const Produto = require("../models/Produto");
 const PedidoItem = require("../models/PedidoItem");
+const Pagamento = require("../models/Pagamento");
+const PedidoEndereco = require("../models/PedidoEndereco");
 
 exports.criarPedido = async (req, res) => {
-    const { userId, enderecoId, total } = req.body
+    const { userId, enderecoId, total, pagamento } = req.body;
     const { itens } = req.body;
 
     if (!userId) {
@@ -20,6 +22,14 @@ exports.criarPedido = async (req, res) => {
 
     try {
         const pedidoCriado = await Pedido.criarPedidoUsuario(userId, enderecoId, total)
+        const pagamentoCriado = await Pagamento.criarPagamento({
+            PedidoId: pedidoCriado.Id,
+            Metodo: pagamento.metodo,
+            Valor: pagamento.valor
+        })
+        const pedidoEnderecoCriado = await PedidoEndereco.criarPedidoEndereco({
+            PedidoId: pedidoCriado.Id,
+        })
 
         for (const item of itens) {
             const produto = await Produto.getProduto(item.produtoId);
@@ -37,6 +47,7 @@ exports.criarPedido = async (req, res) => {
                 PrecoUnitario: produto.Preco
             });
         }
+        
 
         res.status(201).json({
             message: "Pedido criado com sucesso",

@@ -54,6 +54,12 @@ export function CarrinhoProvider({ children }) {
         );
     }
 
+    function limparCarrinho() {
+        if (carrinho.length > 0) {
+            setCarrinho([])
+        }
+    }
+
     return (
         <CarrinhoContext.Provider
             value={{
@@ -61,7 +67,8 @@ export function CarrinhoProvider({ children }) {
                 adicionarProduto,
                 removerProduto,
                 alterarQuantidade,
-                calcularTotal
+                calcularTotal,
+                limparCarrinho
             }}
         >
             {children}

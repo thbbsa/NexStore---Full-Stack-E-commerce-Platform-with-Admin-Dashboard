@@ -29,6 +29,7 @@ export default function CheckoutPagamento() {
     const controller = new AbortController();
     const [metodo, setMetodo] = useState("cartao");
     const [messageError, setMessageError] = useState("");
+    const [messageSuccess, setMessageSuccess] = useState("");
     const [dadosCartao, setDadosCartao] = useState({
         numeroCartao: "",
         nomeCartao: "",
@@ -37,13 +38,14 @@ export default function CheckoutPagamento() {
         parcelas: "1",
     })
     const navigate = useNavigate();
-    const { carrinho, calcularTotal } = useContext(CarrinhoContext);
+    const { carrinho, calcularTotal, limparCarrinho } = useContext(CarrinhoContext);
 
     const total = calcularTotal();
 
     async function verificarInformacoes() {
         if (carrinho.length === 0) {
-            alert("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.");
+            mostrarMensagemErro("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.");
+            await new Promise(resolve => setTimeout(resolve, 3000))
             navigate("/carrinho");
             return;
         }
@@ -76,7 +78,15 @@ export default function CheckoutPagamento() {
 
         setTimeout(() => {
             setMessageError("");
-        }, 5000);
+        }, 3000);
+    }
+
+    function mostrarMensagemSucesso(msg) {
+        setMessageSuccess(msg);
+
+        setTimeout(() => {
+            setMessageSuccess("");
+        }, 3000);
     }
 
     function formatarCartao(numero) {
@@ -104,25 +114,35 @@ export default function CheckoutPagamento() {
         const endereco = await enderecoData.json();
         const enderecoPrincipal = endereco.find(e => e.Principal)?.Id_endereco ?? null
 
-        const payload = {
-            userId: userData.user.Id,
-            enderecoId: enderecoPrincipal,
-            total: total,
+            const payload = {
+                userId: userData.user.Id,
+                enderecoId: enderecoPrincipal,
+                total: total,
 
-            itens: carrinho.map(p => {
-                return {
-                    produtoId: p.Id,
-                    quantidade: p.quantidade,
-                }
-            })
-        }
+                pagamento: {
+                    metodo: metodo,
+                    valor: total,
+                },
+
+                itens: carrinho.map(p => {
+                    return {
+                        produtoId: p.Id,
+                        quantidade: p.quantidade,
+                    }
+                })
+            }
 
         try {
             const pedido = await storePedido(payload);
-            console.log("Pedido criado:", pedido);
-            // navigate("/checkout/concluido");
+            mostrarMensagemSucesso("Pedido criado com sucesso!");
+
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            limparCarrinho();
+            navigate(`/checkout/concluido/${pedido.pedidoId}`);
         } catch (err) {
             console.error("Erro ao criar pedido:", err);
+            mostrarMensagemErro("Erro ao criar pedido. Tente novamente.");
         }
     }
     return (
@@ -131,6 +151,13 @@ export default function CheckoutPagamento() {
                 <div className={`ck-error-message ${messageError ? "show" : ""}`}>
                     <MSIcon name="error" size={16} fill={1} />
                     <span>{messageError || "Erro"}</span>
+                </div>
+            </div>
+
+            <div className="ck-message-success-wrap">
+                <div className={`ck-success-message ${messageSuccess ? "show" : ""}`}>
+                    <MSIcon name="check" size={16} fill={1} />
+                    <span>{messageSuccess || "Sucesso"}</span>
                 </div>
             </div>
 
