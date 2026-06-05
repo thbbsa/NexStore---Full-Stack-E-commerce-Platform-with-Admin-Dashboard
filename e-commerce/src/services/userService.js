@@ -82,6 +82,19 @@ export async function storePedido(payload) {
   return data;
 }
 
+export async function getPedido(pedidoId) {
+  const response = await fetch(`${API_URL}/pedidos/${pedidoId}`, {
+    method: 'GET',
+    credentials: 'include'
+  })
 
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw data;
+  }
+
+  return data;
+}
 
 

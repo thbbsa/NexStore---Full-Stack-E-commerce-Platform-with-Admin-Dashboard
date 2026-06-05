@@ -1,12 +1,101 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./DetalhePedido.css";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPedido } from "../../services/userService";
+
+const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
+    <span
+        className="ms"
+        style={{
+            fontSize: size,
+            fontVariationSettings: `'FILL' ${fill}, 'wght' ${wght}, 'GRAD' 0, 'opsz' 20`,
+        }}
+    >
+        {name}
+    </span>
+);
+
 
 export default function DetalhePedido() {
+    const { pedidoId } = useParams();
+    const navigate = useNavigate();
+
+    const etapas = [
+        "Pendente",
+        "Confirmado",
+        "Enviado",
+        "Em trânsito",
+        "Entregue"
+    ];
+
+    const [loading, setLoading] = useState(true);
+
+    const [pedidoDetalhe, setPedidoDetalhe] = useState({
+        itens: [],
+        pagamento: {},
+        usuario: {},
+        endereco: {}
+    });
+    const [messageError, setMessageError] = useState("");
+
+    useEffect(() => {
+        const buscarDetalhePedido = async () => {
+            try {
+                const response = await getPedido(pedidoId);
+
+                setPedidoDetalhe(
+                    response?.pedidoDetalhe || {
+                        itens: [],
+                        pagamento: {},
+                        usuario: {},
+                        endereco: {}
+                    }
+                );
+            } catch (error) {
+                console.error("Erro ao buscar pedido:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        buscarDetalhePedido();
+    }, [pedidoId]);
+    
+    const etapaAtual = etapas.indexOf(pedidoDetalhe?.status);
+
+    function exibirMensagemError(mensagem) {
+        setMessageError(mensagem)
+
+        setTimeout(() => {
+            setMessageError("")
+        }, 3000)
+    }
+
+    const avaliarProduto = () => {
+        if (etapas[etapaAtual] !== "Entregue") {
+            exibirMensagemError("Sua avaliação será liberada após a confirmação da entrega.")
+        } 
+    }
+
+    if (loading) {
+        return <h2>Carregando pedido...</h2>;
+    }
+
     return (
         <div className="pedido-container-global">
-            <div className="status-pedido">
-                <span>Pedido concluído.</span>
+            <div className="ck-message-error-wrap">
+                <div className={`ck-error-message ${messageError ? "show" : ""}`}>
+                    <MSIcon name="error" size={16} fill={1} />
+                    <span>{messageError || "Erro"}</span>
+                </div>
             </div>
+
+            <div className="status-pedido">
+                <span>
+                    Status do pedido: {pedidoDetalhe?.status || "Não informado"}
+                </span>
+            </div>
+
             <div className="pedido-container">
                 <div className="pedido-esquerda">
                     <div className="pedido-card">
@@ -14,24 +103,32 @@ export default function DetalhePedido() {
                             Vendido e entregue por: <strong>E-Commerce</strong>
                         </div>
 
-                        <div className="produto">
-                            <img
-                                src="https://images.kabum.com.br/produtos/fotos/115451/cadeira-gamer-husky-storm-black_1596132737_gg.jpg"
-                                alt="Cadeira Gamer"
-                            />
+                        {pedidoDetalhe?.itens?.map((item) => (
+                            <div
+                                className="produto"
+                                key={item.Id || item.id}
+                            >
+                                <div className="produto-info">
+                                    <div className="produto-cabecalho">
+                                        <img
+                                            src={`http://localhost:3000${item.Imagem}`}
+                                            alt={item.Nome}
+                                        />
 
-                            <div className="produto-info">
-                                <h3>
-                                    Cadeira Gamer Husky Storm 100, Até 120kg,
-                                    Almofadas, Reclinável 135º, PU, Preta
-                                </h3>
-                                <p>Quantidade: 1</p>
-                            </div>
+                                        <h3>{item.Nome}</h3>
+                                    </div>
 
-                            <div className="produto-preco">
-                                R$ 515,68
+                                    <p>Quantidade: {item.Quantidade}</p>
+                                </div>
+
+                                <div className="produto-preco">
+                                    R${" "}
+                                    {Number(
+                                        item.PrecoUnitario || 0
+                                    ).toFixed(2)}
+                                </div>
                             </div>
-                        </div>
+                        ))}
 
                         <div className="rastreio">
                             <strong>RASTREIO:</strong>
@@ -45,75 +142,117 @@ export default function DetalhePedido() {
                     </div>
 
                     <div className="timeline">
-                        <div className="step ativo">
-                            <div className="icone">✓</div>
-                            <p>Pedido recebido</p>
-                        </div>
+                        {etapas.map((etapa, index) => (
+                            <React.Fragment key={etapa}>
+                                <div
+                                    className={`step ${
+                                        index <= etapaAtual ? "ativo" : ""
+                                    }`}
+                                >
+                                    <div className="icone">
+                                        {index <= etapaAtual ? "✓" : ""}
+                                    </div>
 
-                        <div className="linha"></div>
+                                    <p>{etapa}</p>
+                                </div>
 
-                        <div className="step ativo">
-                            <div className="icone">✓</div>
-                            <p>Enviado</p>
-                        </div>
-
-                        <div className="linha"></div>
-
-                        <div className="step ativo">
-                            <div className="icone">✓</div>
-                            <p>Em trânsito</p>
-                        </div>
-
-                        <div className="linha"></div>
-
-                        <div className="step ativo">
-                            <div className="icone">✓</div>
-                            <p>Entregue</p>
-                        </div>
+                                {index < etapas.length - 1 && (
+                                    <div
+                                        className={`linha ${
+                                            index < etapaAtual ? "ativa" : ""
+                                        }`}
+                                    ></div>
+                                )}
+                            </React.Fragment>
+                        ))}
                     </div>
-
                 </div>
 
                 <div className="pedido-direita">
                     <div className="resumo-card">
-                        <h3>Pedido #46292656</h3>
+                        <h3>
+                            Pedido #
+                            {String(
+                                pedidoDetalhe?.id ||
+                                    pedidoDetalhe?.Id ||
+                                    ""
+                            ).padStart(5, "0")}
+                        </h3>
 
-                        <p>Raimundo</p>
+                        <p>{pedidoDetalhe?.usuario?.nome || ""}</p>
+
                         <p>
-                            Rua João Meneghette, 581,
-                            Casa, Taboão da Serra - SP
+                            {[
+                                pedidoDetalhe?.endereco?.rua,
+                                pedidoDetalhe?.endereco?.numero,
+                                pedidoDetalhe?.endereco?.complemento,
+                                pedidoDetalhe?.endereco?.cidade
+                            ]
+                                .filter(Boolean)
+                                .join(", ")}
                         </p>
 
                         <hr />
 
-                        <p>Pagamento: Cartão de Crédito</p>
-                        <p>5x sem juros</p>
+                        <p>
+                            Pagamento:{" "}
+                            {pedidoDetalhe?.pagamento?.Metodo ||
+                                "Não informado"}
+                        </p>
+
+                        <p>
+                            Status pagamento:{" "}
+                            {pedidoDetalhe?.pagamento?.Status ||
+                                "Não informado"}
+                        </p>
 
                         <hr />
 
                         <div className="linha-resumo">
                             <span>Produtos</span>
-                            <span>R$ 515,68</span>
+
+                            <span>
+                                R${" "}
+                                {Number(
+                                    pedidoDetalhe?.total ||
+                                        pedidoDetalhe?.Total ||
+                                        0
+                                ).toFixed(2)}
+                            </span>
                         </div>
 
                         <div className="linha-resumo">
                             <span>Frete</span>
-                            <span>R$ 74,62</span>
+                            <span>R$ 16,99</span>
                         </div>
 
                         <div className="linha-resumo total">
                             <span>Total</span>
-                            <span>R$ 590,30</span>
-                        </div>
 
+                            <span>
+                                R${" "}
+                                {Number(
+                                    pedidoDetalhe?.total ||
+                                        pedidoDetalhe?.Total ||
+                                        0
+                                ).toFixed(2)}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="acoes">
-                        <button>Avaliar Produto</button>
+                        <button onClick={() => avaliarProduto()}>☆ Avaliar Produto</button>
                     </div>
 
+                    <div className="acoes-voltar">
+                        <button
+                            className="btn-voltar-pedidos"
+                            onClick={() => navigate("/meus-pedidos")}
+                        >
+                            ← Voltar aos meus pedidos
+                        </button>
+                    </div>
                 </div>
-
             </div>
         </div>
     );

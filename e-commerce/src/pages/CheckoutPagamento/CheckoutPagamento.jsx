@@ -4,11 +4,12 @@ import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
 import "./CheckoutPagamento.css";
 import { getMe, getEndereco, storePedido } from "../../services/userService";
 import { useEffect } from "react";
+import { Tab } from "bootstrap";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
 const TABS = [
-    { id: "cartao", label: "Cartão", icon: "credit_card" },
+    { id: "cartao", label: "Cartão De Crédito", icon: "credit_card" },
     { id: "pix", label: "PIX", icon: "pix" },
     { id: "boleto", label: "Boleto", icon: "receipt_long" },
 ];
@@ -114,23 +115,27 @@ export default function CheckoutPagamento() {
         const endereco = await enderecoData.json();
         const enderecoPrincipal = endereco.find(e => e.Principal)?.Id_endereco ?? null
 
-            const payload = {
-                userId: userData.user.Id,
-                enderecoId: enderecoPrincipal,
-                total: total,
+        const label = TABS.find(
+            metodo => metodo.label === "Cartão De Crédito"
+        )?.label;
 
-                pagamento: {
-                    metodo: metodo,
-                    valor: total,
-                },
+        const payload = {
+            userId: userData.user.Id,
+            enderecoId: enderecoPrincipal,
+            total: total,
 
-                itens: carrinho.map(p => {
-                    return {
-                        produtoId: p.Id,
-                        quantidade: p.quantidade,
-                    }
-                })
-            }
+            pagamento: {
+                metodo: label,
+                valor: total,
+            },
+
+            itens: carrinho.map(p => {
+                return {
+                    produtoId: p.Id,
+                    quantidade: p.quantidade,
+                }
+            })
+        }
 
         try {
             const pedido = await storePedido(payload);
@@ -145,6 +150,7 @@ export default function CheckoutPagamento() {
             mostrarMensagemErro("Erro ao criar pedido. Tente novamente.");
         }
     }
+
     return (
         <div className="ck-page">
             <div className="ck-message-error-wrap">

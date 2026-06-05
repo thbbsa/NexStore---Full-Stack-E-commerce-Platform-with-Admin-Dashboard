@@ -33,6 +33,7 @@ exports.criarPedido = async (req, res) => {
 
         for (const item of itens) {
             const produto = await Produto.getProduto(item.produtoId);
+            console.log(produto)
 
             if (!produto) {
                 return res.status(404).json({
@@ -44,7 +45,7 @@ exports.criarPedido = async (req, res) => {
                 PedidoId: pedidoCriado.Id,
                 ProdutoId: produto.Id,
                 Quantidade: item.quantidade,
-                PrecoUnitario: produto.Preco
+                PrecoUnitario: produto.PrecoPromocional ? produto.PrecoPromocional : produto.Preco
             });
         }
         
@@ -61,4 +62,33 @@ exports.criarPedido = async (req, res) => {
         });
     }
 
+}
+
+exports.getPedido = async (req, res) => {
+    const id = req.params.id
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Id do pedido não encontrado!"
+        })
+    }
+
+    try {
+
+        const detalhePedido = await Pedido.getPedido(id);
+
+        console.log(detalhePedido)
+
+        res.status(201).json({
+            message: "Pedido encontrado com sucesso",
+            pedidoDetalhe: detalhePedido
+        });
+
+    } catch (error) {
+        console.log(error)
+
+        res.status(500).json({
+            message: "Erro interno"
+        });
+    }
 }
