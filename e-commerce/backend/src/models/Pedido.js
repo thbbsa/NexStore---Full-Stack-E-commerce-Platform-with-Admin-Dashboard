@@ -120,6 +120,55 @@ class Pedido {
             throw error;
         }
     }
+
+    static async getPedidos(usuarioId) {
+        const pool = await conectar();
+
+        const resultado = await pool.request()
+            .input("UsuarioId", sql.Int, usuarioId)
+            .query(`
+            SELECT
+                p.Id AS PedidoId,
+                p.DataPedido,
+                p.Status AS PedidoStatus,
+                p.Total,
+
+                pg.Metodo AS MetodoPagamento,
+                pg.Status AS StatusPagamento,
+
+                e.Status AS StatusEntrega,
+                e.CodigoRastreio,
+
+                pr.Id AS ProdutoId,
+                pr.Nome AS ProdutoNome,
+                pr.Imagem,
+
+                pi.Quantidade,
+                pi.PrecoUnitario
+
+            FROM Pedidos p
+
+            INNER JOIN Pagamentos pg
+                ON pg.PedidoId = p.Id
+
+            INNER JOIN Entregas e
+                ON e.PedidoId = p.Id
+
+            INNER JOIN PedidoItens pi
+                ON pi.PedidoId = p.Id
+
+            INNER JOIN Produtos pr
+                ON pr.Id = pi.ProdutoId
+
+            WHERE p.UsuarioId = @UsuarioId
+
+            ORDER BY p.DataPedido DESC
+        `);
+
+        return resultado.recordset;
+    }
 }
+
+
 
 module.exports = Pedido;

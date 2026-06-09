@@ -97,4 +97,17 @@ export async function getPedido(pedidoId) {
   return data;
 }
 
+export async function getPedidos() {
+  const response = await fetch(`${API_URL}/meus-pedidos`, {
+    method: "GET",
+    credentials: 'include'
+  })
 
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw data;
+  }
+
+  return data;
+}

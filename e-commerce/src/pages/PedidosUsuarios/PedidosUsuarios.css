@@ -1,0 +1,389 @@
+/* =========================
+   GLOBAL
+========================= */
+
+.container-global {
+    width: 100%;
+}
+
+.container-global h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 4px;
+}
+
+.container-global Header {
+    width: 100%;
+}
+
+
+/* =========================
+   CONTAINER PEDIDO
+========================= */
+
+.container-pedidos {
+    width: 100%;
+    max-width: 1500px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* =========================
+   DIVISORES
+========================= */
+
+hr {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+}
+
+/* =========================
+   BUSCA
+========================= */
+
+.container-busca {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+    max-width: 400px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--bg2);
+    color: var(--text);
+
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+.input-group input::placeholder {
+    color: transparent;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+.input-group label {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    background: var(--bg2);
+    color: var(--text-muted);
+    font-size: 14px;
+    pointer-events: none;
+    transition: 0.2s ease;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 11px;
+    color: var(--accent);
+}
+
+/* =========================
+   FILTROS
+========================= */
+
+.container-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.container-filtros select {
+    padding: 11px 14px;
+    min-width: 140px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--bg2);
+    color: var(--text);
+
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.container-filtros select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+/* =========================
+   CONTAINER DE PEDIDOS
+========================= */
+
+.container-pedidos {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* =========================
+   CARD DO PEDIDO
+========================= */
+
+.card-pedido {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: border-color 0.15s ease;
+}
+
+.card-pedido:hover {
+    border-color: var(--accent);
+}
+
+/* =========================
+   HEADER DO PEDIDO
+========================= */
+
+.container-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.info-pedido {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-pedido h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.separador {
+    color: var(--border);
+    font-size: 14px;
+}
+
+.data-pedido {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* =========================
+   BADGE DE STATUS
+========================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-concluido {
+    background: #EAF3DE;
+    color: #3B6D11;
+}
+
+.badge-andamento {
+    background: #FAEEDA;
+    color: #854F0B;
+}
+
+.badge-pendente {
+    background: #E6F1FB;
+    color: #185FA5;
+}
+
+/* =========================
+   META (pagamento / entrega)
+========================= */
+
+.container-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.meta-valor {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* =========================
+   CORPO DO PEDIDO (PRODUTO)
+========================= */
+
+.container-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.produto-img-wrap {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.produto-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.info-produto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vendedor {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.info-produto h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.quantidade {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.container-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.container-botoes button {
+    height: 40px;
+    padding: 0 18px;
+
+    border-radius: 8px;
+
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.btn-secundario {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.btn-secundario:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.06);
+}
+
+.btn-primario {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: var(--bg);
+}
+
+.btn-primario:hover {
+    opacity: 0.88;
+}
+
+.container-paginacao {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* =========================
+   BOTÕES PAGINAÇÃO
+========================= */
+
+
+.container-paginacao button {
+    padding: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+}
+
+.container-paginacao button.ativo {
+    background: var(--accent);
+    color: white;
+}

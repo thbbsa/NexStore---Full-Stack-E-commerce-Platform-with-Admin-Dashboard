@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./DetalhePedido.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { getPedido } from "../../services/userService";
+import Header from "../../componentes/Header/Header.jsx";
 
 const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
     <span
@@ -60,7 +61,7 @@ export default function DetalhePedido() {
 
         buscarDetalhePedido();
     }, [pedidoId]);
-    
+
     const etapaAtual = etapas.indexOf(pedidoDetalhe?.status);
 
     function exibirMensagemError(mensagem) {
@@ -74,7 +75,7 @@ export default function DetalhePedido() {
     const avaliarProduto = () => {
         if (etapas[etapaAtual] !== "Entregue") {
             exibirMensagemError("Sua avaliação será liberada após a confirmação da entrega.")
-        } 
+        }
     }
 
     if (loading) {
@@ -83,174 +84,175 @@ export default function DetalhePedido() {
 
     return (
         <div className="pedido-container-global">
-            <div className="ck-message-error-wrap">
-                <div className={`ck-error-message ${messageError ? "show" : ""}`}>
-                    <MSIcon name="error" size={16} fill={1} />
-                    <span>{messageError || "Erro"}</span>
+            <Header />
+            <div className="container-detalhe-pedido">
+                <div className="ck-message-error-wrap">
+                    <div className={`ck-error-message ${messageError ? "show" : ""}`}>
+                        <MSIcon name="error" size={16} fill={1} />
+                        <span>{messageError || "Erro"}</span>
+                    </div>
                 </div>
-            </div>
 
-            <div className="status-pedido">
-                <span>
-                    Status do pedido: {pedidoDetalhe?.status || "Não informado"}
-                </span>
-            </div>
+                <div className="status-pedido">
+                    <span>
+                        Status do pedido: {pedidoDetalhe?.status || "Não informado"}
+                    </span>
+                </div>
 
-            <div className="pedido-container">
-                <div className="pedido-esquerda">
-                    <div className="pedido-card">
-                        <div className="pedido-vendedor">
-                            Vendido e entregue por: <strong>E-Commerce</strong>
-                        </div>
+                <div className="pedido-container">
+                    <div className="pedido-esquerda">
+                        <div className="pedido-card">
+                            <div className="pedido-vendedor">
+                                Vendido e entregue por: <strong>E-Commerce</strong>
+                            </div>
 
-                        {pedidoDetalhe?.itens?.map((item) => (
-                            <div
-                                className="produto"
-                                key={item.Id || item.id}
-                            >
-                                <div className="produto-info">
-                                    <div className="produto-cabecalho">
-                                        <img
-                                            src={`http://localhost:3000${item.Imagem}`}
-                                            alt={item.Nome}
-                                        />
+                            {pedidoDetalhe?.itens?.map((item) => (
+                                <div
+                                    className="produto"
+                                    key={item.Id || item.id}
+                                >
+                                    <div className="produto-info">
+                                        <div className="produto-cabecalho">
+                                            <img
+                                                src={`http://localhost:3000${item.Imagem}`}
+                                                alt={item.Nome}
+                                            />
 
-                                        <h3>{item.Nome}</h3>
+                                            <h3>{item.Nome}</h3>
+                                        </div>
+
+                                        <p>Quantidade: {item.Quantidade}</p>
                                     </div>
 
-                                    <p>Quantidade: {item.Quantidade}</p>
+                                    <div className="produto-preco">
+                                        R${" "}
+                                        {Number(
+                                            item.PrecoUnitario || 0
+                                        ).toFixed(2)}
+                                    </div>
                                 </div>
+                            ))}
 
-                                <div className="produto-preco">
+                            <div className="rastreio">
+                                <strong>RASTREIO:</strong>
+                                <span> JADLOG 534501495</span>
+                            </div>
+
+                            <div className="acoes">
+                                <button>RASTREIO DETALHADO</button>
+                                <button>GERENCIAR PEDIDO</button>
+                            </div>
+                        </div>
+
+                        <div className="timeline">
+                            {etapas.map((etapa, index) => (
+                                <React.Fragment key={etapa}>
+                                    <div
+                                        className={`step ${index <= etapaAtual ? "ativo" : ""
+                                            }`}
+                                    >
+                                        <div className="icone">
+                                            {index <= etapaAtual ? "✓" : ""}
+                                        </div>
+
+                                        <p>{etapa}</p>
+                                    </div>
+
+                                    {index < etapas.length - 1 && (
+                                        <div
+                                            className={`linha ${index < etapaAtual ? "ativa" : ""
+                                                }`}
+                                        ></div>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pedido-direita">
+                        <div className="resumo-card">
+                            <h3>
+                                Pedido #
+                                {String(
+                                    pedidoDetalhe?.id ||
+                                    pedidoDetalhe?.Id ||
+                                    ""
+                                ).padStart(5, "0")}
+                            </h3>
+
+                            <p>{pedidoDetalhe?.usuario?.nome || ""}</p>
+
+                            <p>
+                                {[
+                                    pedidoDetalhe?.endereco?.rua,
+                                    pedidoDetalhe?.endereco?.numero,
+                                    pedidoDetalhe?.endereco?.complemento,
+                                    pedidoDetalhe?.endereco?.cidade
+                                ]
+                                    .filter(Boolean)
+                                    .join(", ")}
+                            </p>
+
+                            <hr />
+
+                            <p>
+                                Pagamento:{" "}
+                                {pedidoDetalhe?.pagamento?.Metodo ||
+                                    "Não informado"}
+                            </p>
+
+                            <p>
+                                Status pagamento:{" "}
+                                {pedidoDetalhe?.pagamento?.Status ||
+                                    "Não informado"}
+                            </p>
+
+                            <hr />
+
+                            <div className="linha-resumo">
+                                <span>Produtos</span>
+
+                                <span>
                                     R${" "}
                                     {Number(
-                                        item.PrecoUnitario || 0
+                                        pedidoDetalhe?.total ||
+                                        pedidoDetalhe?.Total ||
+                                        0
                                     ).toFixed(2)}
-                                </div>
+                                </span>
                             </div>
-                        ))}
 
-                        <div className="rastreio">
-                            <strong>RASTREIO:</strong>
-                            <span> JADLOG 534501495</span>
+                            <div className="linha-resumo">
+                                <span>Frete</span>
+                                <span>R$ 16,99</span>
+                            </div>
+
+                            <div className="linha-resumo total">
+                                <span>Total</span>
+
+                                <span>
+                                    R${" "}
+                                    {Number(
+                                        pedidoDetalhe?.total ||
+                                        pedidoDetalhe?.Total ||
+                                        0
+                                    ).toFixed(2)}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="acoes">
-                            <button>RASTREIO DETALHADO</button>
-                            <button>GERENCIAR PEDIDO</button>
-                        </div>
-                    </div>
-
-                    <div className="timeline">
-                        {etapas.map((etapa, index) => (
-                            <React.Fragment key={etapa}>
-                                <div
-                                    className={`step ${
-                                        index <= etapaAtual ? "ativo" : ""
-                                    }`}
-                                >
-                                    <div className="icone">
-                                        {index <= etapaAtual ? "✓" : ""}
-                                    </div>
-
-                                    <p>{etapa}</p>
-                                </div>
-
-                                {index < etapas.length - 1 && (
-                                    <div
-                                        className={`linha ${
-                                            index < etapaAtual ? "ativa" : ""
-                                        }`}
-                                    ></div>
-                                )}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="pedido-direita">
-                    <div className="resumo-card">
-                        <h3>
-                            Pedido #
-                            {String(
-                                pedidoDetalhe?.id ||
-                                    pedidoDetalhe?.Id ||
-                                    ""
-                            ).padStart(5, "0")}
-                        </h3>
-
-                        <p>{pedidoDetalhe?.usuario?.nome || ""}</p>
-
-                        <p>
-                            {[
-                                pedidoDetalhe?.endereco?.rua,
-                                pedidoDetalhe?.endereco?.numero,
-                                pedidoDetalhe?.endereco?.complemento,
-                                pedidoDetalhe?.endereco?.cidade
-                            ]
-                                .filter(Boolean)
-                                .join(", ")}
-                        </p>
-
-                        <hr />
-
-                        <p>
-                            Pagamento:{" "}
-                            {pedidoDetalhe?.pagamento?.Metodo ||
-                                "Não informado"}
-                        </p>
-
-                        <p>
-                            Status pagamento:{" "}
-                            {pedidoDetalhe?.pagamento?.Status ||
-                                "Não informado"}
-                        </p>
-
-                        <hr />
-
-                        <div className="linha-resumo">
-                            <span>Produtos</span>
-
-                            <span>
-                                R${" "}
-                                {Number(
-                                    pedidoDetalhe?.total ||
-                                        pedidoDetalhe?.Total ||
-                                        0
-                                ).toFixed(2)}
-                            </span>
+                            <button onClick={() => avaliarProduto()}>☆ Avaliar Produto</button>
                         </div>
 
-                        <div className="linha-resumo">
-                            <span>Frete</span>
-                            <span>R$ 16,99</span>
+                        <div className="acoes-voltar">
+                            <button
+                                className="btn-voltar-pedidos"
+                                onClick={() => navigate("/meus-pedidos")}
+                            >
+                                ← Voltar aos meus pedidos
+                            </button>
                         </div>
-
-                        <div className="linha-resumo total">
-                            <span>Total</span>
-
-                            <span>
-                                R${" "}
-                                {Number(
-                                    pedidoDetalhe?.total ||
-                                        pedidoDetalhe?.Total ||
-                                        0
-                                ).toFixed(2)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="acoes">
-                        <button onClick={() => avaliarProduto()}>☆ Avaliar Produto</button>
-                    </div>
-
-                    <div className="acoes-voltar">
-                        <button
-                            className="btn-voltar-pedidos"
-                            onClick={() => navigate("/meus-pedidos")}
-                        >
-                            ← Voltar aos meus pedidos
-                        </button>
                     </div>
                 </div>
             </div>

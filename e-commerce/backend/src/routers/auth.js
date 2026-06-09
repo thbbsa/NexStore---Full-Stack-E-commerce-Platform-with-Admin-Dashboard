@@ -9,7 +9,7 @@ const {
   atualizarProduto,
 } = require("../controllers/produtoController");
 
-const { criarPedido, getPedido } = require('../controllers/PedidoController')
+const { criarPedido, getPedido, getPedidos } = require('../controllers/PedidoController')
 
 const upload = require("../middleware/upload");
 
@@ -44,6 +44,7 @@ router.patch("/produtos/:id", atualizarProduto);
 
 router.post("/criar-pedido", criarPedido)
 router.get("/pedidos/:id", getPedido)
+router.get('/meus-pedidos', getPedidos);
 
 module.exports = router;
 

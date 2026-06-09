@@ -21,7 +21,7 @@ const HeaderProfile = ({ username, initials, dropdownOpen, setDropdownOpen, drop
                 <span className="msymbol">person</span>
                 Meu Perfil
             </Link>
-            <Link to="#" onClick={() => setDropdownOpen(false)}>
+            <Link to="/meus-pedidos" onClick={() => setDropdownOpen(false)}>
                 <span className="msymbol">receipt_long</span>
                 Meus Pedidos
             </Link>

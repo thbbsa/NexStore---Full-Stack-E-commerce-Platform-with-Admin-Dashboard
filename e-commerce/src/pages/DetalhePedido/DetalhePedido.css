@@ -1,5 +1,9 @@
 .pedido-container-global {
     width: 100%;
+}
+
+.container-detalhe-pedido {
+    width: 100%;
     max-width: 1400px;
     margin: 30px auto;
     padding: 0 20px;

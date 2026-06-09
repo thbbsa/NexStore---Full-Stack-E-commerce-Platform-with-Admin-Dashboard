@@ -22,6 +22,7 @@ import CheckoutPagamento from './pages/CheckoutPagamento/CheckoutPagamento.jsx';
 import CheckoutConcluido from './pages/CheckoutConcluido/CheckoutConcluido.jsx';
 import Perfil from './pages/Perfil/PerfilDetails.jsx'
 import DetalhePedido from './pages/DetalhePedido/DetalhePedido.jsx';
+import PedidoUsuarios from './pages/PedidosUsuarios/PedidosUsuarios.jsx';
 
 import { CarrinhoProvider } from "./context/Carrinho/CarrinhoProvider.jsx";
 
@@ -43,6 +44,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/checkout/pagamento" element={<CheckoutPagamento />} />
           <Route path="/checkout/concluido/:pedidoId" element={<CheckoutConcluido />} />
           <Route path="/detalhe-pedido/:pedidoId" element={<DetalhePedido/>}/>
+          <Route path="/meus-pedidos" element={<PedidoUsuarios/>}/>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
