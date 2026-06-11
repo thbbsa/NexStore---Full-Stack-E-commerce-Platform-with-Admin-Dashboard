@@ -141,6 +141,15 @@ CREATE TABLE Entregas (
 );
 GO
 
+CREATE TABLE TiposEntrega (
+    Id INT PRIMARY KEY IDENTITY,
+    Nome VARCHAR(100) NOT NULL,
+    PrazoMinimo INT NOT NULL,
+    PrazoMaximo INT NOT NULL,
+    Valor DECIMAL(10,2) NOT NULL,
+    Ativo BIT DEFAULT 1
+);
+
 /* ===============================
    HISTÓRICO DE ESTOQUE
    =============================== */

@@ -220,13 +220,10 @@
 
 .hdr-badge {
     position: absolute;
-    top: 6px;
+    top: 2px;
     right: 6px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--hdr-bg);
+    color: var(--accent);
+    font-size: 10px;
 }
 
 /* =========================================================

@@ -6,6 +6,8 @@ import { useEndereco } from "./hooks/useEndereco";
 import HeaderSearch from "./components/HeaderSearch";
 import HeaderProfile from "./components/HeaderProfile";
 import EnderecoModal from "./components/EnderecoModal";
+import { useContext } from "react";
+import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext"
 import "./header.css";
 
 const Header = () => {
@@ -26,6 +28,10 @@ const Header = () => {
         enderecoSalvo,
         confirmarEndereco,
     } = useEndereco();
+
+    const {
+        qntCarrinho
+    } = useContext(CarrinhoContext)
 
     return (
         <>
@@ -66,9 +72,9 @@ const Header = () => {
                                 {/* Carrinho */}
                                 <Link to="/carrinho" className="hdr-icon-btn" title="Carrinho">
                                     <span className="msymbol">shopping_bag</span>
-                                    <span className="hdr-badge" />
+                                    <span className="hdr-badge">{qntCarrinho()}</span>
                                 </Link>
-
+                            
                                 <div className="hdr-divider" />
 
                                 {/* Perfil */}

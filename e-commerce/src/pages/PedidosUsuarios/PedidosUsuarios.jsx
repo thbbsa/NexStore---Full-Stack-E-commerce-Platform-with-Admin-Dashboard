@@ -25,7 +25,7 @@ export default function PedidoUsuarios() {
     }, [])
 
 
-    const itensPorPagina = 10;
+    const itensPorPagina = 5;
     const indiceInicial = (paginaAtual - 1) * itensPorPagina;
     const indiceFinal = indiceInicial + itensPorPagina;
 

@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./DetalhePedido.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { getPedido } from "../../services/userService";
 import Header from "../../componentes/Header/Header.jsx";
+
+import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext";
 
 const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
     <span
@@ -20,6 +22,10 @@ const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
 export default function DetalhePedido() {
     const { pedidoId } = useParams();
     const navigate = useNavigate();
+
+    const { dadosCheckout } = useContext(CheckoutContext);
+
+    const freteValor = dadosCheckout.tipoEntrega?.preco === "Grátis" ? 0 : 19.90;
 
     const etapas = [
         "Pendente",
@@ -81,6 +87,8 @@ export default function DetalhePedido() {
     if (loading) {
         return <h2>Carregando pedido...</h2>;
     }
+
+    console.log(pedidoDetalhe)
 
     return (
         <div className="pedido-container-global">
@@ -214,17 +222,13 @@ export default function DetalhePedido() {
 
                                 <span>
                                     R${" "}
-                                    {Number(
-                                        pedidoDetalhe?.total ||
-                                        pedidoDetalhe?.Total ||
-                                        0
-                                    ).toFixed(2)}
+                                    {Number(pedidoDetalhe.itens?.map(item => item.PrecoUnitario)).toFixed(2)}
                                 </span>
                             </div>
 
                             <div className="linha-resumo">
                                 <span>Frete</span>
-                                <span>R$ 16,99</span>
+                                <span>{freteValor.toFixed(2)}</span>
                             </div>
 
                             <div className="linha-resumo total">

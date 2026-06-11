@@ -60,6 +60,10 @@ export function CarrinhoProvider({ children }) {
         }
     }
 
+    function qntCarrinho() {
+        return carrinho.length;
+    }
+
     return (
         <CarrinhoContext.Provider
             value={{
@@ -68,6 +72,7 @@ export function CarrinhoProvider({ children }) {
                 removerProduto,
                 alterarQuantidade,
                 calcularTotal,
+                qntCarrinho,
                 limparCarrinho
             }}
         >

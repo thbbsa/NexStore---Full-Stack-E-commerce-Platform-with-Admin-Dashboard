@@ -2,9 +2,10 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
 import "./CheckoutPagamento.css";
-import { getMe, getEndereco, storePedido } from "../../services/userService";
-import { useEffect } from "react";
+import { getMe, storePedido } from "../../services/userService";
 import { Tab } from "bootstrap";
+
+import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
@@ -40,8 +41,10 @@ export default function CheckoutPagamento() {
     })
     const navigate = useNavigate();
     const { carrinho, calcularTotal, limparCarrinho } = useContext(CarrinhoContext);
+    const { dadosCheckout } = useContext(CheckoutContext);
 
-    const total = calcularTotal();
+    const freteValor = dadosCheckout.tipoEntrega?.preco === "Grátis" ? 0 : 19.90;
+    const total = calcularTotal() + freteValor;
 
     async function verificarInformacoes() {
         if (carrinho.length === 0) {
@@ -58,8 +61,8 @@ export default function CheckoutPagamento() {
             } else if (!/^\d{16}$/.test(dadosCartao.numeroCartao.replace(/\s/g, ''))) {
                 mostrarMensagemErro("Número do cartão inválido. Deve conter 16 dígitos.");
                 return;
-            } else if (!/^\d{2}\/\d{2}$/.test(dadosCartao.validade)) {
-                mostrarMensagemErro("Data de validade inválida. Use o formato MM/AA.");
+            } else if (!validadeCartaoValida(dadosCartao.validade)) {
+                mostrarMensagemErro("Data de validade inválida ou cartão vencido.");
                 return;
             } else if (!/^\d{3,4}$/.test(dadosCartao.cvv)) {
                 mostrarMensagemErro("CVV inválido. Deve conter 3 ou 4 dígitos.");
@@ -68,10 +71,35 @@ export default function CheckoutPagamento() {
                 mostrarMensagemErro("Selecione o número de parcelas.");
                 return;
             } else {
-                // navigate("/checkout/concluido");
                 await armazenarDados();
             }
         }
+    }
+
+    function validadeCartaoValida(validade) {
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(validade)) {
+            return false;
+        }
+
+        const [mes, ano] = validade.split('/');
+
+        const hoje = new Date();
+
+        const anoAtual = hoje.getFullYear() % 100;
+        const mesAtual = hoje.getMonth() + 1;
+
+        const anoCartao = parseInt(ano);
+        const mesCartao = parseInt(mes);
+
+        if (anoCartao < anoAtual) {
+            return false;
+        }
+
+        if (anoCartao === anoAtual && mesCartao < mesAtual) {
+            return false;
+        }
+
+        return true;
     }
 
     function mostrarMensagemErro(msg) {
@@ -111,17 +139,12 @@ export default function CheckoutPagamento() {
 
     async function armazenarDados() {
         const userData = await getMe();
-        const enderecoData = await getEndereco({ signal: controller.signal });
-        const endereco = await enderecoData.json();
-        const enderecoPrincipal = endereco.find(e => e.Principal)?.Id_endereco ?? null
-
-        const label = TABS.find(
-            metodo => metodo.label === "Cartão De Crédito"
-        )?.label;
+        const enderecoId = dadosCheckout.enderecoId;
+        const label = TABS.find(t => t.id === metodo)?.label;
 
         const payload = {
             userId: userData.user.Id,
-            enderecoId: enderecoPrincipal,
+            enderecoId: enderecoId,
             total: total,
 
             pagamento: {
@@ -166,9 +189,7 @@ export default function CheckoutPagamento() {
                     <span>{messageSuccess || "Sucesso"}</span>
                 </div>
             </div>
-
             <div className="ck-wrap">
-
                 {/* Stepper */}
                 <div className="ck-stepper">
                     {STEPS.map((s, i) => (
@@ -279,7 +300,7 @@ export default function CheckoutPagamento() {
                                         <label>Parcelas</label>
                                         <div className="ck-form-input-wrap">
                                             <MSIcon name="receipt" size={15} />
-                                            <select className="ck-form-input" style={{ cursor: 'pointer' }} value={dadosCartao.parcelas} onChange={(e) => setDadosCartao({ ...dadosCartao, parcelas: e.target.value })}>
+                                            <select className="ck-form-input ck-select" style={{ cursor: 'pointer' }} value={dadosCartao.parcelas} onChange={(e) => setDadosCartao({ ...dadosCartao, parcelas: e.target.value })}>
                                                 <option>1x de R$ {total.toFixed(2)} sem juros</option>
                                                 <option>2x de R$ {(total / 2).toFixed(2)} sem juros</option>
                                                 <option>3x de R$ {(total / 3).toFixed(2)} sem juros</option>
@@ -367,7 +388,9 @@ export default function CheckoutPagamento() {
                         </div>
                         <div className="ck-summary-row">
                             <span>Frete</span>
-                            <span style={{ color: '#00e596' }}>Grátis</span>
+                            <span style={{ color: freteValor === 0 ? '#00e596' : 'var(--text)' }}>
+                                {freteValor === 0 ? "Grátis" : `R$ ${freteValor.toFixed(2)}`}
+                            </span>
                         </div>
                         <div className="ck-summary-divider" />
                         <div className="ck-summary-row total">

@@ -37,8 +37,9 @@
 }
 
 .ck-message-error-wrap {
-    display: flex;
-    justify-content: end;
+    position: absolute;
+    right: 0;
+    margin: 10px;
 }
 
 .ck-error-message {
@@ -68,8 +69,9 @@
 
 
 .ck-message-success-wrap {
-    display: flex;
-    justify-content: end;
+    position: absolute;
+    right: 0;
+    margin: 10px;
 }
 
 .ck-success-message {
@@ -326,6 +328,11 @@
     font-size: 14px;
     padding: 11px 12px 11px 8px;
     letter-spacing: 0.02em;
+}
+
+.ck-select option {
+    background: var(--bg2);
+    color: var(--text);
 }
 
 .ck-form-input::placeholder { color: var(--muted); opacity: 0.5; }

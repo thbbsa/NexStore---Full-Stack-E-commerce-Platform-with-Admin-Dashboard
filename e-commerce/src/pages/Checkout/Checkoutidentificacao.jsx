@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getMe, getEndereco, storeEndereco, UpdateEndereco } from "../../services/userService";
 import { useContext } from "react";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
+import { CheckoutContext  } from "../../context/CheckoutContext/CheckoutContext"
 import "./CheckoutIdentificacao.css";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
@@ -45,6 +46,8 @@ export default function CheckoutIdentificacao() {
 
   const navigate = useNavigate();
   const { carrinho, calcularTotal } = useContext(CarrinhoContext);
+
+  const { setDadosCheckout } = useContext(CheckoutContext);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -364,6 +367,10 @@ export default function CheckoutIdentificacao() {
           <div className="ck-summary-footer">
             <button className="ck-btn-next" onClick={() => {
               definirPrincipal(enderecoSelecionado);
+              setDadosCheckout({
+                enderecoId: enderecoSelecionado,
+                tipoEntrega: ENTREGAS.find(e => e.id === entrega)
+              });
               navigate("/checkout/pagamento");
             }}>
               <MSIcon name="payments" size={18} wght={500} />

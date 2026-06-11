@@ -1,7 +1,19 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
 import "./carrinho.css";
+
+const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
+    <span
+        className="ms"
+        style={{
+            fontSize: size,
+            fontVariationSettings: `'FILL' ${fill}, 'wght' ${wght}, 'GRAD' 0, 'opsz' 20`,
+        }}
+    >
+        {name}
+    </span>
+);
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
@@ -9,8 +21,26 @@ const Carrinho = () => {
     const { carrinho, removerProduto, alterarQuantidade, calcularTotal } = useContext(CarrinhoContext);
     const navigate = useNavigate();
 
+    const [messageError, setMessageError] = useState("")
+
+    function showMessageError(msg) {
+        setMessageError(msg)
+
+        setTimeout(() => {
+            setMessageError("")
+        }, 3000);
+    }
+
     return (
         <div className="cart-page">
+
+            <div className="ck-message-error-wrap">
+                <div className={`ck-error-message ${messageError ? "show" : ""}`}>
+                    <MSIcon name="error" size={16} fill={1} />
+                    <span>{messageError || "Erro"}</span>
+                </div>
+            </div>
+
             <div className="cart-container">
 
                 {/* Stepper */}
@@ -133,10 +163,16 @@ const Carrinho = () => {
                         </div>
 
                         <div className="cart-actions">
-                            <button className="cart-btn-checkout" onClick={() => navigate("/checkout/identificacao")}>
+                            <button className="cart-btn-checkout" onClick={() => {
+                                if (carrinho.length === 0) {
+                                    showMessageError("Adicione um item ao carrinho para continuar.")
+                                } else {
+                                    navigate("/checkout/identificacao")
+                                }   
+                            }}>
                                 <span className="msymbol">bolt</span>
                                 Finalizar Compra
-                            </button>   
+                            </button>
                             <button
                                 className="cart-btn-continue"
                                 onClick={() => navigate("/")}

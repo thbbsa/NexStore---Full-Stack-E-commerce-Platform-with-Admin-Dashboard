@@ -25,6 +25,7 @@ import DetalhePedido from './pages/DetalhePedido/DetalhePedido.jsx';
 import PedidoUsuarios from './pages/PedidosUsuarios/PedidosUsuarios.jsx';
 
 import { CarrinhoProvider } from "./context/Carrinho/CarrinhoProvider.jsx";
+import { CheckoutProvider } from './context/CheckoutContext/CheckoutContext.jsx';
 
 import ProtectedRoute from "./componentes/ProtectedRoute/ProtectedRoute.jsx";
 
@@ -34,41 +35,42 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
 
     <CarrinhoProvider>
-      <Router>
-        <Routes>
-          {/* públicas */}
-          <Route path="/produtos/:id" element={<ProductDetails />} />
-          <Route path="/produtos" element={<BuscarProduto />} />
-          <Route path="/carrinho" element={<Carrinho />} />
-          <Route path="/checkout/identificacao" element={<CheckoutIdentificacao />} />
-          <Route path="/checkout/pagamento" element={<CheckoutPagamento />} />
-          <Route path="/checkout/concluido/:pedidoId" element={<CheckoutConcluido />} />
-          <Route path="/detalhe-pedido/:pedidoId" element={<DetalhePedido/>}/>
-          <Route path="/meus-pedidos" element={<PedidoUsuarios/>}/>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/*" element={<Home />} />
-          <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
+      <CheckoutProvider>
+        <Router>
+          <Routes>
+            {/* públicas */}
+            <Route path="/produtos/:id" element={<ProductDetails />} />
+            <Route path="/produtos" element={<BuscarProduto />} />
+            <Route path="/carrinho" element={<Carrinho />} />
+            <Route path="/checkout/identificacao" element={<CheckoutIdentificacao />} />
+            <Route path="/checkout/pagamento" element={<CheckoutPagamento />} />
+            <Route path="/checkout/concluido/:pedidoId" element={<CheckoutConcluido />} />
+            <Route path="/detalhe-pedido/:pedidoId" element={<DetalhePedido />} />
+            <Route path="/meus-pedidos" element={<PedidoUsuarios />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/*" element={<Home />} />
+            <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
 
 
-          {/* DASHBOARD */}
-          <Route path="/dashboard" element={<DashBoard />}> 
-            <Route index element={<DashboardHome />} />
+            {/* DASHBOARD */}
+            <Route path="/dashboard" element={<DashBoard />}>
+              <Route index element={<DashboardHome />} />
 
-            {/* produtos */}
-            <Route path="produtos" element={<ListaProdutos />} />
-            <Route path="produtos/novo" element={<CriarProduto />} />
-            <Route path="produtos/editar/:id" element={<EditarProduto />} />
+              {/* produtos */}
+              <Route path="produtos" element={<ListaProdutos />} />
+              <Route path="produtos/novo" element={<CriarProduto />} />
+              <Route path="produtos/editar/:id" element={<EditarProduto />} />
 
-            {/* usuários */}
-            <Route path="usuarios" element={<ListaUsuarios />} />
-            <Route path="usuarios/editar/:id" element={<EditarUsuario />} />
-          </Route>
+              {/* usuários */}
+              <Route path="usuarios" element={<ListaUsuarios />} />
+              <Route path="usuarios/editar/:id" element={<EditarUsuario />} />
+            </Route>
 
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </CheckoutProvider>
     </CarrinhoProvider>
-
   </StrictMode>
 );
