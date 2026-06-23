@@ -4,6 +4,7 @@ import { buscarProdutosPorQuery } from "../../services/produtoService";
 import Header from "../../componentes/Header/Header";
 import ProductCard from "../../componentes/ProductCard/ProductCard";
 import "./buscarProduto.css";
+import { useBuscarProduto } from "./hook/useBuscarProduto";
 
 const CATEGORIAS = {
     1: "Hardware",
@@ -16,7 +17,6 @@ const CATEGORIAS = {
 
 const BuscarProduto = () => {
     const [searchParams] = useSearchParams();
-    const [produtos, setProdutos] = useState([]);
     const [ordenacao, setOrdenacao] = useState("padrao");
     const [exibir, setExibir] = useState(20);
 
@@ -30,20 +30,11 @@ const BuscarProduto = () => {
         ? `"${query}"`
         : "Todos os produtos";
 
-    useEffect(() => {
-        const carregarProdutos = async () => {
-            try {
-                const data = await buscarProdutosPorQuery(
-                    query ?? null,
-                    categoriaId ?? null
-                );
-                setProdutos(data);
-            } catch (error) {
-                console.error("Erro ao buscar produtos:", error);
-            }
-        };
-        carregarProdutos();
-    }, [query, categoriaId]);
+
+    const {
+        loading,
+        produtos
+    } = useBuscarProduto()
 
     // Ordenação local
     const produtosOrdenados = [...produtos]
@@ -55,6 +46,18 @@ const BuscarProduto = () => {
             return 0;
         })
         .slice(0, exibir);
+
+
+    if (loading) {
+        return (
+            <div className="pd-page">
+                <div className="pd-state">
+                    <div className="pd-spinner" />
+                    <p>Carregando produtos...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bp-page">

@@ -3,26 +3,48 @@ import './PedidosUsuarios.css'
 import { getPedidos } from "../../services/userService"
 import Header from "../../componentes/Header/Header.jsx";
 import { useNavigate } from "react-router-dom";
+import { usePedidoUsuario } from "./hook/usePedidoUsuario.js"
 
 export default function PedidoUsuarios() {
     const navigate = useNavigate()
 
-    const [pedidos, setPedidos] = useState([])
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [pesquisa, setPesquisa] = useState("")
     const [filtroPeriodo, setFiltroPeriodo] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("")
 
+    const {
+        pedidos,
+        loading, 
+        erro
+    } = usePedidoUsuario()
 
-    useEffect(() => {
-        const buscarPedidos = async () => {
-            const response = await getPedidos()
+    if (loading) {
+        return (
+            <div className="pd-page">
+                <div className="pd-state">
+                    <div className="pd-spinner" />
+                    <p>Carregando pedidos...</p>
+                </div>
+            </div>
+        );
+    }
 
-            setPedidos(response.pedidos);
-        }
-
-        buscarPedidos();
-    }, [])
+    if (erro || !pedidos) {
+        return (
+            <div className="pd-page">
+                <div className="pd-state">
+                    <span className="pd-state-icon">inventory_2</span>
+                    <h3>Pedidos não encontrado</h3>
+                    <p>O item que você procura não está disponível.</p>
+                    <button className="pd-btn-back" onClick={() => navigate("/")}>
+                        <span className="msymbol">arrow_back</span>
+                        Voltar para Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
 
     const itensPorPagina = 5;

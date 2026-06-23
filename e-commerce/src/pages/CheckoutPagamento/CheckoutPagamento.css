@@ -584,3 +584,17 @@
     .ck-card-form-row { grid-template-columns: 1fr; }
     .ck-form-field.full { grid-column: span 1; }
 }
+
+.ck-btn-next:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    background: var(--accent);
+}
+
+.ck-btn-next:disabled:hover {
+    background: var(--accent);
+    box-shadow: none;
+    transform: none;
+}

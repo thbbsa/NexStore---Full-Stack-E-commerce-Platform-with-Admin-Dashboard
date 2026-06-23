@@ -497,6 +497,68 @@
     vertical-align: top;
 }
 
+.ck-message-error-wrap {
+    position: absolute;
+    right: 0;
+    margin: 10px;
+}
+
+.ck-error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    color: #ff4d4d;
+    font-size: 13px; font-weight: 500;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.ck-error-message.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.ck-message-success-wrap {
+    position: absolute;
+    right: 0;
+    margin: 10px;
+}
+
+.ck-success-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 229, 150, 0.1);
+    border: 1px solid rgba(0, 229, 150, 0.25);
+    color: #00e596;
+    font-size: 13px; font-weight: 500;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.ck-success-message.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
 /* =========================================================
    ANIMATION
 ========================================================= */

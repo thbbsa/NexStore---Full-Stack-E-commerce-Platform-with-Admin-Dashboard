@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getMe, getEndereco, storeEndereco, UpdateEndereco } from "../../services/userService";
 import { useContext } from "react";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
-import { CheckoutContext  } from "../../context/CheckoutContext/CheckoutContext"
+import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext"
 import "./CheckoutIdentificacao.css";
+import { useCheckoutIdentificacao } from "./hook/useCheckoutIdentificacao";
+import { useAddress } from "./hook/useAdress";
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
@@ -26,89 +28,25 @@ const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
 );
 
 export default function CheckoutIdentificacao() {
-  const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
   const [adicionandoNovo, setAdicionandoNovo] = useState(false);
   const [entrega, setEntrega] = useState("normal");
-  const [user, setUser] = useState({
-    Id: '', Nome: '', Username: '', Email: '', Telefone: '', CPF: '',
-    Enderecos: []
-  });
-
-  const [endereco, setEndereco] = useState({
-    cep: "",
-    logradouro: "",
-    numero: "",
-    complemento: "",
-    bairro: "",
-    localidade: "",
-    estado: ""
-  });
 
   const navigate = useNavigate();
   const { carrinho, calcularTotal } = useContext(CarrinhoContext);
 
-  const { setDadosCheckout } = useContext(CheckoutContext);
+  const { atualizarDados } = useContext(CheckoutContext)
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const {
+    user,
+    enderecoSelecionado,
+    setEnderecoSelecionado
+  } = useCheckoutIdentificacao()
 
-    const buscarDadosUsuario = async () => {
-      try {
-        const data = await getMe();
-        const response = await getEndereco({ signal: controller.signal });
-        const enderecos = await response.json();
-
-        const normalizarEndereco = (e) => ({
-          id: e.Id_endereco,
-          label: "Casa",
-          rua: e.Rua,
-          numero: e.Numero,
-          complemento: e.Complemento,
-          bairro: e.Bairro,
-          cidade: e.Cidade,
-          estado: e.Estado,
-          cep: e.Cep,
-          principal: e.Principal
-        });
-
-        const lista = Array.isArray(enderecos)
-          ? enderecos.map(normalizarEndereco)
-          : [normalizarEndereco(enderecos)];
-
-        if (data?.user) {
-          setUser(prev => ({ ...prev, ...data.user, Enderecos: lista }));
-          if (lista.length > 0) {
-            const principal = lista.find(e => e.principal);
-            setEnderecoSelecionado(principal ? principal.id : lista[0].id);
-          } else {
-            setEnderecoSelecionado(null);
-          }
-        }
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          console.error("Erro ao buscar dados do usuário:", error);
-        }
-      }
-    };
-
-    buscarDadosUsuario();
-    return () => controller.abort();
-  }, []);
-
-  async function completeAdressFields(cep) {
-    const endereco = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    const data = await endereco.json();
-
-    if (data.erro) return
-
-    setEndereco(prev => ({
-      ...prev,
-      logradouro: data.logradouro,
-      bairro: data.bairro,
-      localidade: data.localidade,
-      estado: data.uf
-    }));
-  }
+  const {
+    endereco, 
+    setEndereco, 
+    completeAddressFields
+  } = useAddress()
 
   function handleChange(nomeCampo, valor) {
     if (nomeCampo === "cep") {
@@ -140,6 +78,8 @@ export default function CheckoutIdentificacao() {
       Principal: true
     });
   }
+
+
   async function saveEndereco() {
     await storeEndereco(endereco);
     setEndereco({
@@ -367,7 +307,7 @@ export default function CheckoutIdentificacao() {
           <div className="ck-summary-footer">
             <button className="ck-btn-next" onClick={() => {
               definirPrincipal(enderecoSelecionado);
-              setDadosCheckout({
+              atualizarDados({
                 enderecoId: enderecoSelecionado,
                 tipoEntrega: ENTREGAS.find(e => e.id === entrega)
               });

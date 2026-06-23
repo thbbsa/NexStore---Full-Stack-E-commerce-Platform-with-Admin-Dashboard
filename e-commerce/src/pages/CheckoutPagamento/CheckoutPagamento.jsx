@@ -1,11 +1,10 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
 import "./CheckoutPagamento.css";
-import { getMe, storePedido } from "../../services/userService";
 import { Tab } from "bootstrap";
+import { formatarCartao, formartarValidadeCartao } from "../../utils/formatters"
+import { useNavigate } from "react-router-dom"
 
-import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext";
+import { useCheckoutPagamento } from "./hook/useCheckoutPagamento";
+
 
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
@@ -28,151 +27,21 @@ const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
 );
 
 export default function CheckoutPagamento() {
-    const controller = new AbortController();
-    const [metodo, setMetodo] = useState("cartao");
-    const [messageError, setMessageError] = useState("");
-    const [messageSuccess, setMessageSuccess] = useState("");
-    const [dadosCartao, setDadosCartao] = useState({
-        numeroCartao: "",
-        nomeCartao: "",
-        validade: "",
-        cvv: "",
-        parcelas: "1",
-    })
     const navigate = useNavigate();
-    const { carrinho, calcularTotal, limparCarrinho } = useContext(CarrinhoContext);
-    const { dadosCheckout } = useContext(CheckoutContext);
 
-    const freteValor = dadosCheckout.tipoEntrega?.preco === "Grátis" ? 0 : 19.90;
-    const total = calcularTotal() + freteValor;
-
-    async function verificarInformacoes() {
-        if (carrinho.length === 0) {
-            mostrarMensagemErro("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.");
-            await new Promise(resolve => setTimeout(resolve, 3000))
-            navigate("/carrinho");
-            return;
-        }
-
-        if (metodo === "cartao") {
-            if (!dadosCartao.numeroCartao || !dadosCartao.nomeCartao || !dadosCartao.validade || !dadosCartao.cvv) {
-                mostrarMensagemErro("Por favor, preencha todas as informações do cartão.");
-                return;
-            } else if (!/^\d{16}$/.test(dadosCartao.numeroCartao.replace(/\s/g, ''))) {
-                mostrarMensagemErro("Número do cartão inválido. Deve conter 16 dígitos.");
-                return;
-            } else if (!validadeCartaoValida(dadosCartao.validade)) {
-                mostrarMensagemErro("Data de validade inválida ou cartão vencido.");
-                return;
-            } else if (!/^\d{3,4}$/.test(dadosCartao.cvv)) {
-                mostrarMensagemErro("CVV inválido. Deve conter 3 ou 4 dígitos.");
-                return;
-            } else if (dadosCartao.parcelas === "0") {
-                mostrarMensagemErro("Selecione o número de parcelas.");
-                return;
-            } else {
-                await armazenarDados();
-            }
-        }
-    }
-
-    function validadeCartaoValida(validade) {
-        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(validade)) {
-            return false;
-        }
-
-        const [mes, ano] = validade.split('/');
-
-        const hoje = new Date();
-
-        const anoAtual = hoje.getFullYear() % 100;
-        const mesAtual = hoje.getMonth() + 1;
-
-        const anoCartao = parseInt(ano);
-        const mesCartao = parseInt(mes);
-
-        if (anoCartao < anoAtual) {
-            return false;
-        }
-
-        if (anoCartao === anoAtual && mesCartao < mesAtual) {
-            return false;
-        }
-
-        return true;
-    }
-
-    function mostrarMensagemErro(msg) {
-        setMessageError(msg);
-
-        setTimeout(() => {
-            setMessageError("");
-        }, 3000);
-    }
-
-    function mostrarMensagemSucesso(msg) {
-        setMessageSuccess(msg);
-
-        setTimeout(() => {
-            setMessageSuccess("");
-        }, 3000);
-    }
-
-    function formatarCartao(numero) {
-        const apenasNumeros = numero.replace(/\D/g, '');
-        const partes = [];
-        for (let i = 0; i < apenasNumeros.length; i += 4) {
-            partes.push(apenasNumeros.substring(i, i + 4));
-        }
-
-        return partes.join(' ');
-    }
-
-    function formatarValidade(valor) {
-        const apenasNumeros = valor.replace(/\D/g, '');
-        let formatted = apenasNumeros;
-        if (apenasNumeros.length > 2) {
-            formatted = apenasNumeros.substring(0, 2) + '/' + apenasNumeros.substring(2, 4);
-        }
-        return formatted;
-    }
-
-    async function armazenarDados() {
-        const userData = await getMe();
-        const enderecoId = dadosCheckout.enderecoId;
-        const label = TABS.find(t => t.id === metodo)?.label;
-
-        const payload = {
-            userId: userData.user.Id,
-            enderecoId: enderecoId,
-            total: total,
-
-            pagamento: {
-                metodo: label,
-                valor: total,
-            },
-
-            itens: carrinho.map(p => {
-                return {
-                    produtoId: p.Id,
-                    quantidade: p.quantidade,
-                }
-            })
-        }
-
-        try {
-            const pedido = await storePedido(payload);
-            mostrarMensagemSucesso("Pedido criado com sucesso!");
-
-            await new Promise(resolve => setTimeout(resolve, 3000));
-
-            limparCarrinho();
-            navigate(`/checkout/concluido/${pedido.pedidoId}`);
-        } catch (err) {
-            console.error("Erro ao criar pedido:", err);
-            mostrarMensagemErro("Erro ao criar pedido. Tente novamente.");
-        }
-    }
+    const {
+        carrinho,
+        metodo,
+        setMetodo,
+        dadosCartao,
+        setDadosCartao,
+        total,
+        freteValor,
+        messageSuccess,
+        messageError,
+        verificarInformacoes,
+        loading
+    } = useCheckoutPagamento(TABS)
 
     return (
         <div className="ck-page">
@@ -274,7 +143,7 @@ export default function CheckoutPagamento() {
                                                     className="ck-form-input"
                                                     placeholder="MM/AA"
                                                     maxLength={5}
-                                                    value={formatarValidade(dadosCartao.validade)}
+                                                    value={formartarValidadeCartao(dadosCartao.validade)}
                                                     onChange={(e) => setDadosCartao({ ...dadosCartao, validade: e.target.value })}
                                                 />
                                             </div>
@@ -400,9 +269,13 @@ export default function CheckoutPagamento() {
                     </div>
 
                     <div className="ck-summary-footer">
-                        <button className="ck-btn-next" onClick={() => verificarInformacoes()}>
+                        <button
+                            className="ck-btn-next"
+                            onClick={verificarInformacoes}
+                            disabled={loading}
+                        >
                             <MSIcon name="check_circle" size={18} wght={500} />
-                            Confirmar Pagamento
+                            {loading ? "Processando..." : "Confirmar Pagamento"}
                         </button>
                         <button className="ck-btn-back" onClick={() => navigate("/checkout/identificacao")}>
                             <MSIcon name="arrow_back" size={15} />

@@ -1,43 +1,43 @@
-import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { buscarProdutoPorId } from "../../services/produtoService";
+import { useContext, useState } from "react";
 import Breadcrumb from "../../componentes/BreadCrumb/Breadcrumb";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
-import { isAuthenticated } from "../../services/auth";
 import "./ProdutoDetalhe.css";
+import { useProdutoDetalhe } from "./hooks/useProdutoDetalhe";
+
+const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
+    <span
+        className="ms"
+        style={{
+            fontSize: size,
+            fontVariationSettings: `'FILL' ${fill}, 'wght' ${wght}, 'GRAD' 0, 'opsz' 20`,
+        }}
+    >
+        {name}
+    </span>
+);
+
 
 const ProdutoDetalhe = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { adicionarProduto } = useContext(CarrinhoContext);
 
-    const [produto, setProduto] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [isAuth, setIsAuth] = useState(false);
-    const [erro, setErro] = useState(false);
+    const { produto, loading, erro, isAuth } = useProdutoDetalhe(id);
 
-    useEffect(() => {
-        const carregarProduto = async () => {
-            try {
-                setLoading(true);
-                const data = await buscarProdutoPorId(id);
-                if (!data?.produto) { setErro(true); return; }
-                setProduto(data.produto);
-            } catch {
-                setErro(true);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const [messageError, setMessageError] = useState("");
+    const [messageSuccess, setMessageSuccess] = useState("");
 
-        const checkAuth = async () => {
-            const auth = await isAuthenticated();
-            setIsAuth(auth);
-        };
 
-        checkAuth();
-        carregarProduto();
-    }, [id]);
+    function mostrarMensagem(tipo, msg) {
+        if (tipo === "erro") {
+            setMessageError(msg);
+            setTimeout(() => setMessageError(""), 3000);
+        } else {
+            setMessageSuccess(msg);
+            setTimeout(() => setMessageSuccess(""), 3000);
+        }
+    }
 
     if (loading) {
         return (
@@ -78,13 +78,31 @@ const ProdutoDetalhe = () => {
     };
 
     const handleAddCart = () => {
-        if (isAuth) adicionarProduto(produto);
-        else navigate("/login");
+        if (isAuth) {
+            mostrarMensagem("sucesso", "Produto adicionado ao carrinho.")
+        } else {
+            mostrarMensagem("erro", "Erro ao adicionar o produto ao carrinho.")
+            navigate("/login");
+        }
     };
 
     return (
         <div className="pd-page">
             <div className="pd-container">
+
+                <div className="ck-message-error-wrap">
+                    <div className={`ck-error-message ${messageError ? "show" : ""}`}>
+                        <MSIcon name="error" size={16} fill={1} />
+                        <span>{messageError || "Erro"}</span>
+                    </div>
+                </div>
+
+                <div className="ck-message-success-wrap">
+                    <div className={`ck-success-message ${messageSuccess ? "show" : ""}`}>
+                        <MSIcon name="check" size={16} fill={1} />
+                        <span>{messageSuccess || "Sucesso"}</span>
+                    </div>
+                </div>
 
                 <Breadcrumb
                     paths={[
@@ -118,7 +136,7 @@ const ProdutoDetalhe = () => {
                             {/* Rating */}
                             <div className="pd-rating">
                                 <div className="pd-stars">
-                                    {[1,2,3,4,5].map(i => (
+                                    {[1, 2, 3, 4, 5].map(i => (
                                         <span key={i} className={`pd-star${i > 4 ? " empty" : ""}`}>star</span>
                                     ))}
                                 </div>
@@ -197,7 +215,6 @@ const ProdutoDetalhe = () => {
                     </div>
 
                 </div>
-
             </div>
         </div>
     );

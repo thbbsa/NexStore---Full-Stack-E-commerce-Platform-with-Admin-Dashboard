@@ -5,6 +5,8 @@ import { getPedido } from "../../services/userService";
 import Header from "../../componentes/Header/Header.jsx";
 
 import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext";
+import { useDetalhePedido } from "./hook/useDetalhePedido.js";
+
 
 const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
     <span
@@ -35,38 +37,13 @@ export default function DetalhePedido() {
         "Entregue"
     ];
 
-    const [loading, setLoading] = useState(true);
-
-    const [pedidoDetalhe, setPedidoDetalhe] = useState({
-        itens: [],
-        pagamento: {},
-        usuario: {},
-        endereco: {}
-    });
     const [messageError, setMessageError] = useState("");
 
-    useEffect(() => {
-        const buscarDetalhePedido = async () => {
-            try {
-                const response = await getPedido(pedidoId);
-
-                setPedidoDetalhe(
-                    response?.pedidoDetalhe || {
-                        itens: [],
-                        pagamento: {},
-                        usuario: {},
-                        endereco: {}
-                    }
-                );
-            } catch (error) {
-                console.error("Erro ao buscar pedido:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        buscarDetalhePedido();
-    }, [pedidoId]);
+    const {
+        pedidoDetalhe,
+        loading,
+        erro
+    } = useDetalhePedido(pedidoId);
 
     const etapaAtual = etapas.indexOf(pedidoDetalhe?.status);
 
@@ -85,10 +62,31 @@ export default function DetalhePedido() {
     }
 
     if (loading) {
-        return <h2>Carregando pedido...</h2>;
+        return (
+            <div className="pd-page">
+                <div className="pd-state">
+                    <div className="pd-spinner" />
+                    <p>Carregando pedido...</p>
+                </div>
+            </div>
+        );
     }
 
-    console.log(pedidoDetalhe)
+    if (erro || !pedidoDetalhe) {
+        return (
+            <div className="pd-page">
+                <div className="pd-state">
+                    <span className="pd-state-icon">inventory_2</span>
+                    <h3>Produto não encontrado</h3>
+                    <p>O item que você procura não está disponível.</p>
+                    <button className="pd-btn-back" onClick={() => navigate("/")}>
+                        <span className="msymbol">arrow_back</span>
+                        Voltar para Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="pedido-container-global">

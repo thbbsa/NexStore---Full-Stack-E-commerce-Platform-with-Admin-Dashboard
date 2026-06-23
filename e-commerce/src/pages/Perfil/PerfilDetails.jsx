@@ -1,94 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../../componentes/Header/Header";
-import { getMe, storeUser, getEndereco, UpdateEndereco } from '../../services/userService';
+import { formatarCpf, formatarTelefone  } from "../../utils/formatters"
+import {usePerfilData } from "./hooks/usePerfilData"
+import { useEditarPerfil } from "./hooks/useEditarPerfil";
 import "./PerfilDetails.css";
 
 const PerfilDetails = () => {
-    const [user, setUser] = useState({
-        Id: '', Nome: '', Username: '', Email: '', Telefone: '', CPF: ''
+    const {
+        user, setUser,
+        originalUser, setOriginalUser,
+        endereco, setEndereco,
+        originalEndereco, setOriginalEndereco,
+    } = usePerfilData();
+
+    const {
+        isEditing,
+        message,
+        status,
+        handleCancel,
+        handleEditProfile,
+    } = useEditarPerfil({
+        user, setUser,
+        endereco, setEndereco,
+        originalUser, setOriginalUser,
+        originalEndereco, setOriginalEndereco,
     });
-
-    const [endereco, setEndereco] = useState({
-        Rua: '', Numero: '', Complemento: '', Bairro: '',
-        Cidade: '', Estado: '', CEP: '', Principal: null
-    });
-
-    const [isEditing, setIsEditing] = useState(false);
-    const [message, setMessage] = useState("");
-    const [status, setStatus] = useState("");
-    const [originalUser, setOriginalUser] = useState({});
-    const [originalEndereco, setOriginalEndereco] = useState({});
-
-    useEffect(() => {
-        const carregarInfoUser = async () => {
-            try {
-                const data = await getMe();
-                const response = await getEndereco({ signal: new AbortController().signal });
-                const enderecos = await response.json();
-
-                setUser(data.user || data);
-                setOriginalUser(data.user || data);
-
-                const enderecoPrincipal = Array.isArray(enderecos)
-                    ? enderecos.find(endereco => endereco.Principal)
-                    : null;
-
-                setOriginalEndereco(enderecoPrincipal || {});
-                setEndereco(enderecoPrincipal || {});
-
-            } catch (error) {
-                console.error("Erro ao carregar info do usuário:", error);
-            }
-        };
-        carregarInfoUser();
-    }, []);
-
-
-    const formatarCpf = (value) => {
-        value = value.replace(/\D/g, '')
-        value = value.slice(0, 11)
-
-        value = value.replace(/(\d{3})(\d)/, '$1.$2')
-        value = value.replace(/(\d{3})(\d)/, '$1.$2')
-        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-
-        return value
-    }
-
-    const formatarTelefone = (value) => {
-        value = value.replace(/\D/g, '')
-        value = value.slice(0, 11)
-
-        if (value.length <= 10) {
-            // telefone fixo
-            value = value.replace(/(\d{2})(\d)/, '($1) $2')
-            value = value.replace(/(\d{4})(\d)/, '$1-$2')
-        } else {
-            // celular
-            value = value.replace(/(\d{2})(\d)/, '($1) $2')
-            value = value.replace(/(\d{5})(\d)/, '$1-$2')
-        }
-
-        return value
-    }
-
-    const verificarCamposMudados = (original, atual, id) => {
-        const mudancas = {};
-
-        for (const key in original) {
-            if (key === id) {
-                mudancas[key] = original[key]; // sempre envie o Id para identificação
-                continue;
-            }
-
-            if (atual.hasOwnProperty(key) && original[key] !== atual[key]) {
-                mudancas[key] = atual[key];
-            }
-
-        }
-
-        return mudancas;
-    }
 
     const handleChangeUser = (e) => {
         const { name, value } = e.target;
@@ -98,132 +34,6 @@ const PerfilDetails = () => {
     const handleChangeEndereco = (e) => {
         const { name, value } = e.target;
         setEndereco(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleCancel = () => {
-        setUser(originalUser);
-        setEndereco(originalEndereco);
-        setMessage("");
-        setStatus("");
-        setIsEditing(false);
-    };
-
-    const handleEditProfile = async () => {
-        if (isEditing) {
-            const isEqualUser =
-                JSON.stringify(user) === JSON.stringify(originalUser);
-
-            const isEqualEndereco =
-                JSON.stringify(endereco) === JSON.stringify(originalEndereco);
-
-            if (isEqualUser && isEqualEndereco) {
-                setMessage("Nenhuma alteração feita.");
-                setStatus("error");
-                setIsEditing(false);
-                return;
-            }
-
-            try {
-                const userToSend = {
-                    ...user,
-                    CPF: user.CPF.replace(/\D/g, ''),
-                    Telefone: user.Telefone.replace(/\D/g, '')
-                };
-
-                const camposMudadosUser = verificarCamposMudados(
-                    originalUser,
-                    userToSend,
-                    "Id"
-                );
-
-                const camposMudadosEndereco = verificarCamposMudados(
-                    originalEndereco,
-                    endereco,
-                    "Id_endereco"
-                );
-
-                const semMudancaUser =
-                    Object.keys(camposMudadosUser).length === 1;
-
-                const semMudancaEndereco =
-                    Object.keys(camposMudadosEndereco).length === 1;
-
-                if (semMudancaUser && semMudancaEndereco) {
-                    setMessage("Nenhuma alteração feita.");
-                    setStatus("error");
-                    setIsEditing(false);
-                    return;
-                }
-
-                let userResponse = null;
-                let enderecoResponse = null;
-
-                if (!semMudancaUser) {
-                    userResponse = await storeUser(camposMudadosUser);
-                }
-
-                if (!semMudancaEndereco) {
-                    enderecoResponse = await UpdateEndereco(
-                        camposMudadosEndereco
-                    );
-                }
-
-                const userSuccess = userResponse?.ok;
-                const enderecoSuccess = enderecoResponse?.ok;
-
-                if (userSuccess || enderecoSuccess) {
-
-                    let result = null;
-
-                    if (userResponse) {
-                        result = await userResponse.json();
-                    } else if (enderecoResponse) {
-                        result = await enderecoResponse.json();
-                    }
-
-                    setMessage(result?.message || "Perfil atualizado.");
-                    setStatus("success");
-
-                    setOriginalUser(user);
-                    setOriginalEndereco(endereco);
-
-                    setIsEditing(false);
-
-                } else {
-
-                    let errorData = null;
-
-                    if (userResponse && !userResponse.ok) {
-                        errorData = await userResponse.json();
-                    } else if (
-                        enderecoResponse &&
-                        !enderecoResponse.ok
-                    ) {
-                        errorData = await enderecoResponse.json();
-                    }
-
-                    setMessage(
-                        errorData?.message || "Erro ao atualizar perfil."
-                    );
-
-                    setStatus("error");
-                }
-
-            } catch (error) {
-                console.error(
-                    "Erro de rede ao atualizar perfil:",
-                    error
-                );
-
-                setMessage("Erro de rede ao atualizar perfil.");
-                setStatus("error");
-            }
-
-        } else {
-            setMessage("");
-            setStatus("");
-            setIsEditing(true);
-        }
     };
 
     // Iniciais para o avatar
