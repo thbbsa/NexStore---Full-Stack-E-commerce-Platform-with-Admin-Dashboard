@@ -85,11 +85,11 @@ class Produto {
     }
 
 
-    static async excluir(id) {
+    static async desativar(id) {
         const pool = await conectar();
         await pool.request()
             .input("Id", sql.Int, id)
-            .query("DELETE FROM Produtos WHERE Id = @Id");
+            .query("UPDATE Produtos SET Ativo = 0 WHERE Id = @Id");
     }
 
     static async getProduto(id) {

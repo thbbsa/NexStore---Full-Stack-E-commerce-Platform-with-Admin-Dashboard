@@ -9,7 +9,7 @@ const DashBoard = () => {
 
             <div className="flex-grow-1">
                 <AdminHeader />
-                <Outlet /> {/* 🔥 AQUI MUDA SÓ O MEIO */}
+                <Outlet /> {/* AQUI MUDA SÓ O MEIO */}
             </div>
         </div>
     );

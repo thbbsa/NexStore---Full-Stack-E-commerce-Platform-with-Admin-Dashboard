@@ -58,14 +58,14 @@ exports.controller = async (req, res) => {
 };
 
 
-exports.excluirProduto = async (req, res) => {
+exports.desativarProduto = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await Produto.excluir(id);
-    res.status(200).json({ mensagem: "Produto excluído com sucesso" });
+    await Produto.desativar(id);
+    res.status(200).json({ mensagem: "Produto desativado com sucesso" });
   } catch (error) {
-    res.status(500).json({ erro: "Erro ao excluir produto" });
+    res.status(500).json({ erro: "Erro ao desativar produto" });
   }
 };
 

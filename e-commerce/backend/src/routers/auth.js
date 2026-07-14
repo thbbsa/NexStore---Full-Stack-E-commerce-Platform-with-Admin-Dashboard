@@ -4,12 +4,14 @@ const {
   criarProduto,
   listarProdutosAdmin,
   controller,
-  excluirProduto,
+  desativarProduto,
   buscarProduto,
   atualizarProduto,
 } = require("../controllers/produtoController");
 
 const { criarPedido, getPedido, getPedidos } = require('../controllers/PedidoController')
+
+const { getUsuarios } = require("../controllers/usersController")
 
 const upload = require("../middleware/upload");
 
@@ -35,7 +37,7 @@ router.get("/produtos/admin", listarProdutosAdmin);
 
 router.get("/produtos", controller);
 
-router.delete("/produtos/:id", excluirProduto)
+router.patch("/produtos/:id/desativar", desativarProduto);
 
 router.get("/produtos/:id", buscarProduto)
 
@@ -45,6 +47,8 @@ router.patch("/produtos/:id", atualizarProduto);
 router.post("/criar-pedido", criarPedido)
 router.get("/pedidos/:id", getPedido)
 router.get('/meus-pedidos', getPedidos);
+
+router.get("/usuarios", getUsuarios);
 
 module.exports = router;
 

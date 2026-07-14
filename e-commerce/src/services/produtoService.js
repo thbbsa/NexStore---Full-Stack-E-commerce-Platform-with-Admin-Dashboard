@@ -31,10 +31,14 @@ export async function buscarProdutosPublicos() {
 }
 
 
-export async function excluirProduto(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
+export async function desativarProduto(id) {
+  const response = await fetch(`${API_URL}/${id}/desativar`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
     credentials: "include",
+    body: JSON.stringify({ Ativo: false })
   });
 
   const data = await response.json();

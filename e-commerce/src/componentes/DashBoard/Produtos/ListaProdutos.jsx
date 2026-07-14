@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { excluirProduto } from "../../../services/produtoService";
+import { desativarProduto } from "../../../services/produtoService";
 import { useNavigate } from "react-router-dom";
 import {
   buscarProdutosAdmin,
@@ -72,17 +72,17 @@ const ListaProduto = () => {
   );
 
   // ===============================
-  // Exclusão
+  // Desativação
   // ===============================
 
-  const handleExcluirProduto = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir este produto?")) return;
+  const handleDesativarProduto = async (id) => {
+    if (!window.confirm("Tem certeza que deseja desativar este produto?")) return;
 
     try {
-      await excluirProduto(id);
-      setProdutos(prev => prev.filter(p => p.Id !== id));
+      await desativarProduto(id);
+      setProdutos(prev => prev.map(produto => produto.Id === id ? { ...produto, Ativo: false} : produto));
     } catch {
-      alert("Erro ao excluir produto");
+      alert("Erro ao desativar produto");
     }
   };
 
@@ -93,6 +93,7 @@ const ListaProduto = () => {
   const handleEditarProduto = (id) => {
     navigate(`/dashboard/produtos/editar/${id}`)
   }
+
 
   return (
     <div className="container-fluid p-4">
@@ -167,14 +168,15 @@ const ListaProduto = () => {
         {produtosPaginados.length > 0 ? (
           produtosPaginados.map((produto) => (
             <div className="col-12 col-md-6 col-lg-4 mb-4" key={produto.Id}>
-              <div className="card h-100 shadow-sm">
+              <div className="card h-100 shadow-sm" style={{ width: "60%", height: "300px", overflow: "hidden" }}>
 
+              <div className="image-zoom-container">
                 <img
                   src={`http://localhost:3000${produto.Imagem}`}
-                  className="card-img-top"
+                  className="card-img-top image-zoom"
                   alt={produto.Nome}
-                  style={{ height: "300px",  }}
                 />
+              </div>
 
                 <div className="card-body d-flex flex-column">
 
@@ -202,7 +204,7 @@ const ListaProduto = () => {
                   </p>
 
                   <span
-                    className={`badge ${produto.Ativo ? "bg-success" : "bg-danger"
+                    className={`p-2 badge ${produto.Ativo ? "bg-success" : "bg-danger"
                       }`}
                   >
                     {produto.Ativo ? "Ativo" : "Inativo"}
@@ -212,8 +214,8 @@ const ListaProduto = () => {
                     <button className="btn btn-sm btn-primary w-100" onClick={(e) => handleEditarProduto(produto.Id)}>
                       Editar
                     </button>
-                    <button className="btn btn-sm btn-outline-danger w-100" onClick={(e) => handleExcluirProduto(produto.Id)}>
-                      Excluir
+                    <button className="btn btn-sm btn-outline-danger w-100" onClick={(e) => handleDesativarProduto(produto.Id)}>
+                      Desativar
                     </button>
                   </div>
 
