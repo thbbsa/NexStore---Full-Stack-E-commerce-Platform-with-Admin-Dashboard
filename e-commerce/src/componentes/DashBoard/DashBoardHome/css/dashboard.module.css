@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Paleta de Cores Fiel ao Header (Tema Dark Blue do Painel)
+   ========================================================================== */
+.containerDashboard {
+    /* Cores extraídas diretamente do seu cabeçalho e botões */
+    --bg-gradient: linear-gradient(180deg, #0b111e 0%, #0d1321 100%); /* Fundo ultra escuro do painel */
+    --card-bg: #151c2c;       /* Azul marinho dos cards */
+    --border-color: #1e293b;  /* Borda escura discreta */
+    --text-main: #f8fafc;     /* Texto claro contrastante */
+    --text-muted: #94a3b8;    /* Texto cinza para descrições e títulos secundários */
+    --primary-color: #3b82f6; /* Azul brilhante idêntico ao botão '+ Novo Produto' */
+    --hover-bg: rgba(255, 255, 255, 0.04);
+    
+    /* Alertas e Badges */
+    --warning-bg: rgba(234, 179, 8, 0.1);
+    --warning-border: rgba(234, 179, 8, 0.2);
+    --warning-text: #fde047;
+    
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --danger-border: rgba(239, 68, 68, 0.2);
+    --danger-text: #fca5a5;
+
+    --success-bg: rgba(34, 197, 94, 0.1);
+    --success-border: rgba(34, 197, 94, 0.2);
+    --success-text: #86efac;
+
+    background: var(--bg-gradient);
+    min-height: calc(100vh - 70px);
+    color: var(--text-main);
+    padding-bottom: 4rem !important;
+}
+
+/* ==========================================================================
+   Cards e Seções
+   ========================================================================== */
+.cardCustom {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important; /* Bordas levemente arredondadas combinando com os cards do print */
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+.cardHeaderCustom {
+    background-color: rgba(255, 255, 255, 0.01) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    font-weight: 700;
+    padding: 1rem 1.25rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.textMutedCustom {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.textMainCustom {
+    color: var(--text-main) !important;
+}
+
+/* ==========================================================================
+   Listas de Atividades
+   ========================================================================== */
+.listItemCustom {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    font-size: 0.85rem;
+    padding: 1rem 1.25rem !important;
+}
+
+.listItemCustom:last-child {
+    border-bottom: none !important;
+}
+
+/* ==========================================================================
+   Tabela de Pedidos Recentes
+   ========================================================================== */
+.tableCustom {
+    color: var(--text-main) !important;
+    margin-bottom: 0;
+}
+
+.tableCustom thead {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tableCustom th {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 1rem 1.25rem !important;
+    border-bottom: none !important;
+}
+
+.tableCustom td {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+    padding: 1rem 1.25rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    font-size: 0.85rem;
+}
+
+/* Hover suave na linha da tabela */
+.tableRowHover:hover td {
+    background-color: var(--hover-bg) !important;
+}
+
+/* Badges de Status arredondadas (Pílulas) */
+.badgeWarning {
+    background-color: var(--warning-bg) !important;
+    color: var(--warning-text) !important;
+    border: 1px solid var(--warning-border);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35em 0.8em !important;
+    border-radius: 50px !important;
+}
+
+.badgeSuccess {
+    background-color: var(--success-bg) !important;
+    color: var(--success-text) !important;
+    border: 1px solid var(--success-border);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35em 0.8em !important;
+    border-radius: 50px !important;
+}
+
+.badgeDanger {
+    background-color: var(--danger-bg) !important;
+    color: var(--danger-text) !important;
+    border: 1px solid var(--danger-border);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35em 0.8em !important;
+    border-radius: 50px !important;
+}
+
+/* ==========================================================================
+   Alertas do Rodapé
+   ========================================================================== */
+.alertWarningCustom {
+    background-color: var(--warning-bg) !important;
+    border: 1px solid var(--warning-border) !important;
+    color: var(--warning-text) !important;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+.alertDangerCustom {
+    background-color: var(--danger-bg) !important;
+    border: 1px solid var(--danger-border) !important;
+    color: var(--danger-text) !important;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}

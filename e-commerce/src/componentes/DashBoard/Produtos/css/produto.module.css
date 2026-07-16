@@ -1,0 +1,228 @@
+/* ==========================================================================
+   Configurações Gerais da Página
+   ========================================================================== */
+.containerProduto {
+    background: var(--bg-gradient);
+    min-height: calc(100vh - 70px); /* Ocupa a tela inteira descontando a barra superior */
+    color: var(--text-main);
+    padding-bottom: 4rem !important; /* Espaço de sobra no fim da página para respirar */
+}
+
+.pageTitle {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   Cards Customizados
+   ========================================================================== */
+.cardCustom {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.cardHeaderCustom {
+    background-color: rgba(255, 255, 255, 0.015);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   Formulários (Inputs, Labels, Selects e Textareas)
+   ========================================================================== */
+.labelCustom {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+
+.inputCustom,
+.selectCustom {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inputCustom::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.inputCustom:focus,
+.selectCustom:focus {
+    background-color: var(--input-bg);
+    border-color: var(--primary-color);
+    color: var(--text-main);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+/* Customização dos itens de escolha do select */
+.selectCustom option {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+}
+
+/* Switch (Checkbox customizado estilo Toggle/Chave) */
+.checkboxCustom[type="checkbox"] {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    cursor: pointer;
+    width: 2.5em;
+    height: 1.25em;
+    margin-top: 0.125em;
+}
+
+.checkboxCustom[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkboxCustom[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ==========================================================================
+   Área de Mídia (Upload & Imagem Preview)
+   ========================================================================== */
+.uploadPlaceholder {
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 2.5rem 1.5rem;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.005);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.uploadPlaceholder:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(37, 99, 235, 0.02);
+}
+
+.previewContainer {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    background-color: var(--input-bg);
+}
+
+.imagePreview {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto 12px auto;
+}
+
+.btnRemoveImage {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Botões Globais
+   ========================================================================== */
+.btnSuccess {
+    background: var(--primary-gradient);
+    border: 1px solid transparent;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btnSuccess:hover,
+.btnSuccess:focus {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btnSuccess:active {
+    transform: translateY(1px);
+}
+
+.btnSecondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-main);
+}
+
+/* ==========================================================================
+   Modal/Overlay de Confirmação (Sucesso)
+   ========================================================================== */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.8); /* Backdrop escuro translúcido */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.mensagemProdutoCriado {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+}
+
+.mensagemSucessoTexto {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #10b981; /* Verde esmeralda para confirmação de sucesso */
+    margin-bottom: 1.5rem;
+}
+
+.btnFechar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.btnFechar:hover {
+    color: var(--text-main);
+}

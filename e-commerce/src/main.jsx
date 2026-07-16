@@ -8,7 +8,7 @@ import Register from './pages/Autentificação/Registes.jsx'
 import DashBoard from './pages/DashBoard/DashBoard.jsx'
 
 // componentes internos do dashboard
-import DashboardHome from './componentes/DashBoard/DashboardHome.jsx'
+import DashboardHome from './componentes/DashBoard/DashBoardHome/DashboardHome.jsx'
 import ListaProdutos from './componentes/DashBoard/Produtos/ListaProdutos.jsx'
 import CriarProduto from './componentes/DashBoard/Produtos/CriarProduto.jsx'
 import EditarProduto from './componentes/DashBoard/Produtos/EditarProduto.jsx'
