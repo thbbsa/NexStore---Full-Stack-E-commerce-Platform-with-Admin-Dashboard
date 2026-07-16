@@ -5,7 +5,7 @@ class Users {
         try {
             const pool = await conectar();
             const result = await pool.request()
-                .query("Select Id, Nome, Username, Email, Role FROM Usuarios");
+                .query("Select Id, Nome, Username, Email, Role, Ativo FROM Usuarios");
 
             return result.recordset;
         } catch (error) {

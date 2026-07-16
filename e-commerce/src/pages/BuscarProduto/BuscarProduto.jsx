@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { buscarProdutosPorQuery } from "../../services/produtoService";
 import Header from "../../componentes/Header/Header";
 import ProductCard from "../../componentes/ProductCard/ProductCard";
 import "./buscarProduto.css";
@@ -34,7 +33,7 @@ const BuscarProduto = () => {
     const {
         loading,
         produtos
-    } = useBuscarProduto()
+    } = useBuscarProduto(query, categoriaId)
 
     // Ordenação local
     const produtosOrdenados = [...produtos]

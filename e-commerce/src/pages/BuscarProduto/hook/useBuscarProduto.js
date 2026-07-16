@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { buscarProdutosPorQuery } from "../../../services/produtoService";
 
-export function useBuscarProduto() {
+export function useBuscarProduto(query, categoriaId) {
     const [produtos, setProdutos] = useState([]);
     const [loading, setLoading] = useState(false)
 
