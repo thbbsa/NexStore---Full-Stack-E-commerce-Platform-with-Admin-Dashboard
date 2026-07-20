@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { desativarProduto } from "../../../services/produtoService";
 import { useNavigate } from "react-router-dom";
 import {
+  desativarProduto,
   buscarProdutosAdmin,
 } from "../../../services/produtoService";
+
+import styles from './css/produtoLista.module.css'
 
 const ListaProduto = () => {
   const [produtos, setProdutos] = useState([]);
@@ -47,7 +48,6 @@ const ListaProduto = () => {
       categoriaSelecionada === "" ||
       produto.CategoriaId === Number(categoriaSelecionada);
 
-
     const statusMatch =
       statusSelecionado === "" ||
       (statusSelecionado === "ativo" && produto.Ativo) ||
@@ -80,7 +80,7 @@ const ListaProduto = () => {
 
     try {
       await desativarProduto(id);
-      setProdutos(prev => prev.map(produto => produto.Id === id ? { ...produto, Ativo: false} : produto));
+      setProdutos(prev => prev.map(produto => produto.Id === id ? { ...produto, Ativo: false } : produto));
     } catch {
       alert("Erro ao desativar produto");
     }
@@ -94,38 +94,48 @@ const ListaProduto = () => {
     navigate(`/dashboard/produtos/editar/${id}`)
   }
 
+  // ===============================
+  // Helper de desconto
+  // ===============================
+  const calcularDesconto = (preco, precoPromocional) => {
+    if (!precoPromocional) return null;
+    return Math.round(((preco - precoPromocional) / preco) * 100);
+  };
 
   return (
-    <div className="container-fluid p-4">
+    <div className={`${styles.container} p-4`}>
 
       {/* TÍTULO */}
       <h1 className="mb-4">Listar Produtos</h1>
 
       {/* FILTROS */}
-      <div className="card mb-4">
+      <div className={`${styles.filtersCard} p-4 mb-4`}>
         <div className="card-body">
           <div className="row g-3">
 
             {/* BUSCA */}
             <div className="col-12 col-md-6">
-              <label className="form-label">Buscar</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Buscar produtos..."
-                value={produtoBuscado}
-                onChange={(e) => {
-                  setProdutoBuscado(e.target.value);
-                  setPaginaAtual(1);
-                }}
-              />
+              <div className={styles.inputGroup}>
+                <span className="ps-3 text-secondary">
+                  <i className="bi bi-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Buscar produtos pelo nome..."
+                  value={produtoBuscado}
+                  onChange={(e) => {
+                    setProdutoBuscado(e.target.value);
+                    setPaginaAtual(1);
+                  }}
+                />
+              </div>
             </div>
 
             {/* CATEGORIA */}
             <div className="col-6 col-md-3">
-              <label className="form-label">Categoria</label>
               <select
-                className="form-select"
+                className={`${styles.select} form-select`}
                 value={categoriaSelecionada}
                 onChange={(e) => {
                   setCategoriaSelecionada(e.target.value);
@@ -133,20 +143,19 @@ const ListaProduto = () => {
                 }}
               >
                 <option value="">Todas</option>
-                <option nome="Hardware" value="1">Hardware</option>
-                <option nome="Periféricos" value="2">Periféricos</option>
-                <option nome="Computadores" value="3">Computadores</option>
-                <option nome="Games" value="4">Games</option>
-                <option nome="Celular & Smartphone" value="5">Celular & Smartphone</option>
-                <option nome="Áudio" value="6">Áudio</option>
+                <option value="1">Hardware</option>
+                <option value="2">Periféricos</option>
+                <option value="3">Computadores</option>
+                <option value="4">Games</option>
+                <option value="5">Celular & Smartphone</option>
+                <option value="6">Áudio</option>
               </select>
             </div>
 
             {/* STATUS */}
             <div className="col-6 col-md-3">
-              <label className="form-label">Status</label>
               <select
-                className="form-select"
+                className={`${styles.select} form-select`}
                 value={statusSelecionado}
                 onChange={(e) => {
                   setStatusSelecionado(e.target.value);
@@ -164,65 +173,90 @@ const ListaProduto = () => {
       </div>
 
       {/* LISTA */}
-      <div className="row w-100">
+      <div className="row">
         {produtosPaginados.length > 0 ? (
-          produtosPaginados.map((produto) => (
-            <div className="col-12 col-md-6 col-lg-4 mb-4" key={produto.Id}>
-              <div className="card h-100 shadow-sm" style={{ width: "60%", height: "300px", overflow: "hidden" }}>
+          produtosPaginados.map((produto) => {
+            const desconto = calcularDesconto(produto.Preco, produto.PrecoPromocional);
+            const estoqueBaixo = produto.Estoque > 0 && produto.Estoque <= 5;
+            const semEstoque = produto.Estoque === 0;
 
-              <div className="image-zoom-container">
-                <img
-                  src={`http://localhost:3000${produto.Imagem}`}
-                  className="card-img-top image-zoom"
-                  alt={produto.Nome}
-                />
-              </div>
+            return (
+              <div className="col-12 col-md-6 col-lg-4 mb-4" key={produto.Id}>
+                <div className={`${styles.containerCard} h-100`}>
 
-                <div className="card-body d-flex flex-column">
+                  {/* IMAGEM */}
+                  <img
+                    src={`http://localhost:3000${produto.Imagem}`}
+                    className={styles.imagemProduto}
+                    alt={produto.Nome}
+                  />
 
-                  <h5 className="card-title">{produto.Nome}</h5>
-
-                  <span className="badge bg-secondary mb-2">
-                    {produto.Categoria}
-                  </span>
-
-                  <p className="mb-2">
-                    {produto.PrecoPromocional ? (
-                      <>
-                        <span className="text-muted text-decoration-line-through me-2">
-                          R$ {produto.Preco}
-                        </span>
-                        <span className="fw-bold text-success">
-                          R$ {produto.PrecoPromocional}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="fw-bold">
-                        R$ {produto.Preco}
-                      </span>
-                    )}
-                  </p>
-
+                  {/* BADGES SOBRE A IMAGEM */}
                   <span
-                    className={`p-2 badge ${produto.Ativo ? "bg-success" : "bg-danger"
-                      }`}
+                    className={`${styles.statusProduto} badge ${produto.Ativo ? "bg-success" : "bg-danger"}`}
                   >
                     {produto.Ativo ? "Ativo" : "Inativo"}
                   </span>
 
-                  <div className="mt-auto d-flex gap-2 pt-3">
-                    <button className="btn btn-sm btn-primary w-100" onClick={(e) => handleEditarProduto(produto.Id)}>
-                      Editar
-                    </button>
-                    <button className="btn btn-sm btn-outline-danger w-100" onClick={(e) => handleDesativarProduto(produto.Id)}>
-                      Desativar
-                    </button>
-                  </div>
+                  {desconto > 0 && (
+                    <span className={`${styles.descontoPorcentagem} badge bg-danger`}>
+                      -{desconto}%
+                    </span>
+                  )}
 
+                  <div className={`${styles.cardBodyInner} d-flex flex-column`}>
+
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className={styles.infoSKU}>SKU: {produto.SKU}</span>
+                      <span className="badge bg-secondary">{produto.Categoria}</span>
+                    </div>
+
+                    <h5 className="card-title">{produto.Nome}</h5>
+
+                    <p className={styles.containerPreco}>
+                      {produto.PrecoPromocional ? (
+                        <>
+                          <span className={`${styles.precoAntigo} text-decoration-line-through`}>
+                            R$ {produto.Preco.toFixed(2)}
+                          </span>
+                          <span className={`${styles.precoAtual} fw-bold text-success`}>
+                            R$ {produto.PrecoPromocional.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className={`${styles.precoAtual} fw-bold`}>
+                          R$ {produto.Preco.toFixed(2)}
+                        </span>
+                      )}
+                    </p>
+
+                    <div className={`${styles.infoEstoque} ${semEstoque ? styles.estoqueZerado : estoqueBaixo ? styles.estoqueBaixo : ""}`}>
+                      <i className="bi bi-box-seam"></i>
+                      <span>Estoque: <strong>{produto.Estoque} unidades</strong></span>
+                    </div>
+
+                    <div className="mt-auto d-flex gap-2">
+                      <button
+                        className={`btn btn-primary w-100 d-flex align-items-center justify-content-center gap-1 ${styles.botaoAcao}`}
+                        onClick={() => handleEditarProduto(produto.Id)}
+                      >
+                        <i className="bi bi-pencil"></i>
+                        Editar
+                      </button>
+                      <button
+                        className={`btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-1 ${styles.botaoAcao}`}
+                        onClick={() => handleDesativarProduto(produto.Id)}
+                      >
+                        <i className="bi bi-slash-circle"></i>
+                        Desativar
+                      </button>
+                    </div>
+
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="col-12">
             <div className="card-body text-white text-center">
@@ -249,8 +283,7 @@ const ListaProduto = () => {
             {[...Array(totalPaginas)].map((_, index) => (
               <li
                 key={`pagina-${index + 1}`}
-                className={`page-item ${paginaAtual === index + 1 ? "active" : ""
-                  }`}
+                className={`page-item ${paginaAtual === index + 1 ? "active" : ""}`}
               >
                 <button
                   className="page-link"
@@ -262,8 +295,7 @@ const ListaProduto = () => {
             ))}
 
             <li
-              className={`page-item ${paginaAtual === totalPaginas ? "disabled" : ""
-                }`}
+              className={`page-item ${paginaAtual === totalPaginas ? "disabled" : ""}`}
             >
               <button
                 className="page-link"

@@ -3,9 +3,9 @@
    ========================================================================== */
 .containerProduto {
     background: var(--bg-gradient);
-    min-height: calc(100vh - 70px); /* Ocupa a tela inteira descontando a barra superior */
+    min-height: calc(100vh - 70px); 
     color: var(--text-main);
-    padding-bottom: 4rem !important; /* Espaço de sobra no fim da página para respirar */
+    padding-bottom: 4rem !important; 
 }
 
 .pageTitle {
@@ -68,13 +68,11 @@
     outline: none;
 }
 
-/* Customização dos itens de escolha do select */
 .selectCustom option {
     background-color: var(--card-bg);
     color: var(--text-main);
 }
 
-/* Switch (Checkbox customizado estilo Toggle/Chave) */
 .checkboxCustom[type="checkbox"] {
     background-color: var(--input-bg);
     border-color: var(--border-color);

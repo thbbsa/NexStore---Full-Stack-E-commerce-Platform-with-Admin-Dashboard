@@ -68,7 +68,9 @@ class Produto {
                 Preco,
                 PrecoPromocional,
                 Ativo,
-                Imagem
+                Imagem,
+                SKU,
+                Estoque
             FROM Produtos
         `;
 
