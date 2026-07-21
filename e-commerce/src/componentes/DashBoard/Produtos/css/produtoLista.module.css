@@ -91,7 +91,7 @@
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    width: 340px;
+    max-width: 340px;
     overflow: hidden;
     display: flex;
     flex-direction: column;

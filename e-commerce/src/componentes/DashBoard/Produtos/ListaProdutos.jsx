@@ -181,7 +181,7 @@ const ListaProduto = () => {
             const semEstoque = produto.Estoque === 0;
 
             return (
-              <div className="col-12 col-md-6 col-lg-4 mb-4" key={produto.Id}>
+              <div className="col-12 col-md-6 col-lg-3 mb-4" key={produto.Id}>
                 <div className={`${styles.containerCard} h-100`}>
 
                   {/* IMAGEM */}

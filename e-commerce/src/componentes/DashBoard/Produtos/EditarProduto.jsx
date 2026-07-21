@@ -6,6 +6,8 @@ import {
   atualizarProduto
 } from "../../../services/produtoService";
 
+import styles from './css/produtoEditar.module.css'
+
 const EditarProduto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -69,173 +71,16 @@ const EditarProduto = () => {
   if (!formProduto) return <p className="p-4">Produto não encontrado</p>;
 
   return (
-    <div className="container-fluid p-4">
-      <h2 className="mb-4">Editar Produto</h2>
+    <div className={`${styles.containerProduto} container-fluid p-4`}>
+      {/* Ações */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className={`${styles.pageTitle} mb-4`}>Editar Produto</h2>
 
-      <form onSubmit={handleSubmit}>
-
-        {/* Informações Básicas */}
-        <div className="card mb-4">
-          <div className="card-header">Informações Básicas</div>
-          <div className="card-body row g-3">
-
-            <div className="col-md-6">
-              <label className="form-label">Nome</label>
-              <input
-                type="text"
-                className="form-control"
-                name="nome"
-                value={formProduto.nome}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label className="form-label">Categoria</label>
-              <select
-                className="form-select"
-                name="categoriaId"
-                value={formProduto.categoriaId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Selecione</option>
-                <option nome="Hardware" value="1">Hardware</option>
-                <option nome="Periféricos" value="2">Periféricos</option>
-                <option nome="Computadores" value="3">Computadores</option>
-                <option nome="Games" value="4">Games</option>
-                <option nome="Celular & Smartphone" value="5">Celular & Smartphone</option>
-                <option nome="Áudio" value="6">Áudio</option>
-              </select>
-            </div>
-
-            <div className="col-md-3">
-              <label className="form-label">Marca</label>
-              <input
-                type="text"
-                className="form-control"
-                name="marca"
-                value={formProduto.marca}
-                onChange={handleChange}
-              />
-            </div>
-
-          </div>
-        </div>
-
-        {/* Preço */}
-        <div className="card mb-4">
-          <div className="card-header">Preço</div>
-          <div className="card-body row g-3">
-
-            <div className="col-md-6">
-              <label className="form-label">Preço</label>
-              <input
-                type="number"
-                className="form-control"
-                name="preco"
-                value={formProduto.preco}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label">Preço Promocional</label>
-              <input
-                type="number"
-                className="form-control"
-                name="precoPromocional"
-                value={formProduto.precoPromocional}
-                onChange={handleChange}
-              />
-            </div>
-
-          </div>
-        </div>
-
-        {/* Estoque */}
-        <div className="card mb-4">
-          <div className="card-header">Estoque</div>
-          <div className="card-body row g-3">
-
-            <div className="col-md-4">
-              <label className="form-label">Quantidade</label>
-              <input
-                type="number"
-                className="form-control"
-                name="estoque"
-                value={formProduto.estoque}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="col-md-4">
-              <label className="form-label">SKU</label>
-              <input
-                type="text"
-                className="form-control"
-                name="sku"
-                value={formProduto.sku}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="col-md-4 d-flex align-items-center mt-5">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="ativo"
-                  checked={formProduto.ativo}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label">
-                  Produto ativo
-                </label>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Descrição */}
-        <div className="card mb-4">
-          <div className="card-header">Descrição</div>
-          <div className="card-body">
-
-            <div className="mb-3">
-              <label className="form-label">Descrição curta</label>
-              <textarea
-                className="form-control"
-                rows="2"
-                name="descricaoCurta"
-                value={formProduto.descricaoCurta}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label className="form-label">Descrição completa</label>
-              <textarea
-                className="form-control"
-                rows="4"
-                name="descricaoCompleta"
-                value={formProduto.descricaoCompleta}
-                onChange={handleChange}
-              />
-            </div>
-
-          </div>
-        </div>
-
-        {/* Ações */}
         <div className="d-flex gap-3">
           <button type="submit" className="btn btn-primary">
             Salvar Alterações
           </button>
+
           <button
             type="button"
             className="btn btn-secondary"
@@ -244,7 +89,174 @@ const EditarProduto = () => {
             Cancelar
           </button>
         </div>
+      </div>
 
+      <form onSubmit={handleSubmit}>
+        <div className="row g-3">
+          {/* Informações Básicas */}
+          <div className="col-lg-8 col-12 d-flex flex-column gap-4">
+            <div className={`${styles.cardCustom} card mb-4"`}>
+              <div className={`${styles.cardHeaderCustom} card-header`}>Informações Básicas</div>
+              <div className="card-body row g-3">
+                <div className="col-12">
+                  <label className={`${styles.labelCustom} form-label`}>Nome Do Produto</label>
+                  <input
+                    type="text"
+                    className={`${styles.inputCustom} form-control`}
+                    name="nome"
+                    value={formProduto.nome}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="col-md-3">
+                  <label className={`${styles.labelCustom} form-label`}>Categoria</label>
+                  <select
+                    className={`${styles.selectCustom} form-select`}
+                    name="categoriaId"
+                    value={formProduto.categoriaId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Selecione</option>
+                    <option nome="Hardware" value="1">Hardware</option>
+                    <option nome="Periféricos" value="2">Periféricos</option>
+                    <option nome="Computadores" value="3">Computadores</option>
+                    <option nome="Games" value="4">Games</option>
+                    <option nome="Celular & Smartphone" value="5">Celular & Smartphone</option>
+                    <option nome="Áudio" value="6">Áudio</option>
+                  </select>
+                </div>
+
+                <div className="col-md-3">
+                  <label className={`${styles.labelCustom} form-label`}>Marca</label>
+                  <input
+                    type="text"
+                    className={`${styles.inputCustom} form-control`}
+                    name="marca"
+                    value={formProduto.marca}
+                    onChange={handleChange}
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* Descrição */}
+            <div className={`${styles.cardCustom} card mb-4`}>
+              <div className={`${styles.cardHeaderCustom} card-header`}>Descrição</div>
+              <div className="card-body">
+
+                <div className="mb-3">
+                  <label className={`${styles.labelCustom} form-label `}>Descrição curta</label>
+                  <textarea
+                    className={`${styles.inputCustom} form-control`}
+                    rows="2"
+                    name="descricaoCurta"
+                    value={formProduto.descricaoCurta}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label className={`${styles.labelCustom} form-label`}>Descrição completa</label>
+                  <textarea
+                    className={`${styles.inputCustom} form-control`}
+                    rows="4"
+                    name="descricaoCompleta"
+                    value={formProduto.descricaoCompleta}
+                    onChange={handleChange}
+                  />
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-4 col-12">
+            {/* Card: Status do Produto */}
+            <div className={`${styles.cardCustom} card mb-4`}>
+              <div className={`${styles.cardHeaderCustom} card-header`}>Status de Publicação</div>
+              <div className="card-body">
+                <div className="form-check form-switch py-1">
+                  <input
+                    className={`${styles.checkboxCustom} form-check-input`}
+                    type="checkbox"
+                    name="ativo"
+                    checked={formProduto.ativo}
+                    onChange={handleChange}
+                  />
+                  <label className={`${styles.labelCustom} form-check-label ms-2`} htmlFor="ativoCheckbox">
+                    Ativo na Loja (Visível)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+
+            {/* Preço */}
+            <div className={`${styles.cardCustom} card mb-4`}>
+              <div className={`${styles.cardHeaderCustom} card-header`}>Preço</div>
+              <div className="card-body row g-3">
+
+                <div className="col-12">
+                  <label className={`${styles.labelCustom} form-label`}>Preço</label>
+                  <input
+                    type="number"
+                    className={`${styles.inputCustom} form-control`}
+                    name="preco"
+                    value={formProduto.preco}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="col-12">
+                  <label className={`${styles.labelCustom} form-label`}>Preço Promocional</label>
+                  <input
+                    type="number"
+                    className={`${styles.inputCustom} form-control `}
+                    name="precoPromocional"
+                    value={formProduto.precoPromocional}
+                    onChange={handleChange}
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* Estoque */}
+            <div className={`${styles.cardCustom} card mb-4`}>
+              <div className={`${styles.cardHeaderCustom} card-header`}>Estoque</div>
+              <div className="card-body row g-3">
+
+                <div className="col-12">
+                  <label className={`${styles.labelCustom} form-label`}>Quantidade</label>
+                  <input
+                    type="number"
+                    className={`${styles.inputCustom} form-control`}
+                    name="estoque"
+                    value={formProduto.estoque}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="col-12">
+                  <label className={`${styles.labelCustom} form-label`}>SKU</label>
+                  <input
+                    type="text"
+                    className={`${styles.inputCustom} form-control`}
+                    name="sku"
+                    value={formProduto.sku}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );

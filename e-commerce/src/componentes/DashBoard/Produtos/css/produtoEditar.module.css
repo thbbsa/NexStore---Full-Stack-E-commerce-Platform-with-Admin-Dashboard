@@ -1,0 +1,99 @@
+:root {
+    --bg-gradient: linear-gradient(180deg, #0b111e 0%, #0d1321 100%);
+    --card-bg: #151c2c;
+    --border-color: #1e293b;
+    --input-bg: #0b111e;
+    --primary-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    --hover-bg: rgba(255, 255, 255, 0.04);
+    --text-muted: #94a3b8;
+}
+
+/* Configurações de pagina */
+ 
+.containerProduto {
+    background: var(--bg-gradient);
+    min-height: calc(100vh - 70px); 
+    color: var(--text-main);
+    padding-bottom: 4rem !important; 
+}
+
+.pageTitle {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* Card  */
+
+.cardCustom {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.cardHeaderCustom {
+    background-color: rgba(255, 255, 255, 0.015);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Formularios */
+
+.labelCustom {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+
+.inputCustom,
+.selectCustom {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inputCustom::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.inputCustom:focus,
+.selectCustom:focus {
+    background-color: var(--input-bg);
+    border-color: var(--primary-color);
+    color: var(--text-main);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+.selectCustom option {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+}
+
+.checkboxCustom[type="checkbox"] {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    cursor: pointer;
+    width: 2.5em;
+    height: 1.25em;
+    margin-top: 0.125em;
+}
+
+.checkboxCustom[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkboxCustom[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
