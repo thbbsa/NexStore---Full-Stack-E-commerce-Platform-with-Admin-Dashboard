@@ -75,20 +75,6 @@ const EditarProduto = () => {
       {/* Ações */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className={`${styles.pageTitle} mb-4`}>Editar Produto</h2>
-
-        <div className="d-flex gap-3">
-          <button type="submit" className="btn btn-primary">
-            Salvar Alterações
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => navigate("/dashboard/produtos")}
-          >
-            Cancelar
-          </button>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -256,6 +242,21 @@ const EditarProduto = () => {
               </div>
             </div>
           </div>
+        </div>
+
+
+        <div className="d-flex gap-3">
+          <button
+            type="button"
+            className={`${styles.btnSecondary} btn px-4`}
+            onClick={() => navigate("/dashboard/produtos")}
+          >
+            Cancelar
+          </button>
+
+          <button type="submit" className={`${styles.btnSuccess} btn px-4`}>
+            Salvar Alterações
+          </button>
         </div>
       </form>
     </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUsuarios } from "../../../services/usersService";
 
 // Importando o CSS Module ao invés do CSS Global
@@ -11,6 +12,8 @@ const ListaUsuario = () => {
     const [filtroStatus, setFiltroStatus] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
+
+    const navigate = useNavigate() 
 
     useEffect(() => {
         const carregarUsuarios = async () => {
@@ -66,7 +69,7 @@ const ListaUsuario = () => {
             .join("");
 
     const handleEditar = (usuario) => {
-        console.log(`Editar usuário ${usuario.Id}`);
+        navigate(`/dashboard/usuarios/editar/${usuario.Id}`)
     };
 
     const handleDesativar = (usuario) => {

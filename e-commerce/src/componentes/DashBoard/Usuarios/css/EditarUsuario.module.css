@@ -1,0 +1,299 @@
+:root {
+  --bg-gradient: linear-gradient(180deg, #0b111e 0%, #0d1321 100%);
+  --card-bg: #151c2c;
+  --border-color: #1e293b;
+  --input-bg: #0b111e;
+  --primary-color: #3b82f6;
+  --primary-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  --hover-bg: rgba(255, 255, 255, 0.04);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+/* Pagina */
+.containerUsuario {
+  background: var(--bg-gradient);
+  min-height: 100vh;
+}
+
+.pageTitle {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+/* Card */
+.cardCustom {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.cardHeaderCustom {
+  background-color: rgba(255, 255, 255, 0.015);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-weight: 600;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Formularios */
+.labelCustom {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.labelCustomCPF {
+  color: #64748b;
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  display: block;
+}
+
+.labelCustomEndereco {
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.textMuted {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.labelCustomAvatar {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.labelSubtext {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.inputCustom,
+.selectCustom {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+}
+
+.inputCustom::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.inputCustom:focus,
+.selectCustom:focus {
+  background-color: var(--input-bg);
+  border-color: var(--primary-color);
+  color: var(--text-main);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+.inputCustom:disabled {
+  background-color: rgba(11, 17, 30, 0.6);
+  color: #64748b;
+  cursor: not-allowed;
+  border: 1px solid var(--border-color);
+}
+
+.selectCustom option {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+
+/* Avatar */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* Toggle Switch */
+.statusBody {
+  padding: 1.25rem;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  transition: 0.2s;
+}
+
+.toggleSlider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.toggleSwitch input:checked + .toggleSlider {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.toggleSwitch input:checked + .toggleSlider::before {
+  transform: translateX(20px);
+  background-color: #ffffff;
+}
+
+/* Endereços */
+.enderecoRow {
+  position: relative;
+  border-top: 1px solid var(--border-color);
+}
+
+.badgePrincipal {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* Botões Globais */
+.botaoRecuperar {
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.15s ease;
+  padding: 10px 16px;
+}
+
+.botaoRecuperar:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.acoes {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.enderecoRow:hover .acoes {
+  opacity: 1;
+}
+
+.btnAction {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.btnAction:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btnAction.text-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171 !important;
+}
+
+/* Botão Primário */
+.btnPrimary {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #ffffff;
+  padding: 8px 16px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35);
+  color: #ffffff;
+}
+
+.btnSecondary {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btnSecondary:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-main);
+}
+
+.btnDanger {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btnDanger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  transform: translateY(-1px);
+}

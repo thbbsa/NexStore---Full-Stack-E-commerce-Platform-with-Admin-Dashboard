@@ -97,3 +97,97 @@
 .checkboxCustom[type="checkbox"]:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
+
+/* ==========================================================================
+   Botões Globais
+   ========================================================================== */
+.btnSuccess {
+    background: var(--primary-gradient);
+    border: 1px solid transparent;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btnSuccess:hover,
+.btnSuccess:focus {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btnSuccess:active {
+    transform: translateY(1px);
+}
+
+.btnSecondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-main);
+}
+
+/* ==========================================================================
+   Modal/Overlay de Confirmação (Sucesso)
+   ========================================================================== */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.8); /* Backdrop escuro translúcido */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.mensagemProdutoCriado {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+}
+
+.mensagemSucessoTexto {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #10b981; /* Verde esmeralda para confirmação de sucesso */
+    margin-bottom: 1.5rem;
+}
+
+.btnFechar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.btnFechar:hover {
+    color: var(--text-main);
+}
