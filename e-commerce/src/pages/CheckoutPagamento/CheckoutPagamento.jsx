@@ -9,7 +9,7 @@ import { useCheckoutPagamento } from "./hook/useCheckoutPagamento";
 const STEPS = ["Carrinho", "Identificação", "Pagamento", "Concluído"];
 
 const TABS = [
-    { id: "cartao", label: "Cartão De Crédito", icon: "credit_card" },
+    { id: "cartao", label: "Cartao", icon: "credit_card" },
     { id: "pix", label: "PIX", icon: "pix" },
     { id: "boleto", label: "Boleto", icon: "receipt_long" },
 ];
