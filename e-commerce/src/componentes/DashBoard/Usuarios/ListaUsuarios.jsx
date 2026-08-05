@@ -5,15 +5,35 @@ import { getUsuarios } from "../../../services/usersService";
 // Importando o CSS Module ao invés do CSS Global
 import styles from "./css/ListaUsuario.module.css";
 
+import ModalConfirmacaoExclusao from "../../ModalConfirmacaoExclusao/ModalConfirmacaoExclusao";
+import { excluirUsuario } from "../../../services/userService.js";
+
+const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
+    <span
+        className="ms"
+        style={{
+            fontSize: size,
+            fontVariationSettings: `'FILL' ${fill}, 'wght' ${wght}, 'GRAD' 0, 'opsz' 20`,
+        }}
+    >
+        {name}
+    </span>
+);
+
 const ListaUsuario = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
     const [filtroTipo, setFiltroTipo] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
+    const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
-
-    const navigate = useNavigate() 
+    const [form, setForm] = useState({});
+    const [showMessage, setShowMessage] = useState(false);
+    const [messageSuccess, setMessageSuccess] = useState("");
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+    const [messageError, setMessageError] = useState("");
+    const navigate = useNavigate()
 
     useEffect(() => {
         const carregarUsuarios = async () => {
@@ -71,13 +91,61 @@ const ListaUsuario = () => {
     const handleEditar = (usuario) => {
         navigate(`/dashboard/usuarios/editar/${usuario.Id}`)
     };
+    const handleExcluirUsuario = async (usuario) => {
+        try {
+            const res = await excluirUsuario(form.Id);
+            const data = await res.json();
 
-    const handleDesativar = (usuario) => {
-        console.log(`Desativar usuário ${usuario.Id}`);
+            if (!res.ok) {
+                mostrarMensagemErro(data.message);
+                return;
+            }
+
+            // Remove o usuário excluído da lista local
+            setUsuarios((prev) => prev.filter((u) => u.Id !== form.Id));
+
+            setModalExclusaoAberto(false);
+            mostrarMensagemSucesso(`Usuário excluído com sucesso!`);
+        } catch (error) {
+            console.error(error);
+            mostrarMensagemErro();
+        }
+    };
+
+    const mostrarMensagemSucesso = (msg) => {
+        setMessageSuccess(msg);
+        setShowMessage(true);
+
+        setTimeout(() => {
+            setShowMessage(false);
+        }, 5000);
+    };
+
+    const mostrarMensagemErro = (msg) => {
+        setMessageError(msg || "Ocorreu um erro. Tente novamente.");
+        setShowErrorMessage(true);
+
+        setTimeout(() => {
+            setShowErrorMessage(false);
+        }, 5000);
     };
 
     return (
         <div className={`${styles.container} p-4 d-flex flex-column gap-4 text-white`}>
+
+            {/* Mensagens de feedback */}
+
+            <div className={styles.containerMensagem}>
+                <div className={`${styles.mensagemSucesso} ${showMessage ? styles.show : ""}`}>
+                    <MSIcon name="check" size={16} fill={1} />
+                    <span>{messageSuccess}</span>
+                </div>
+
+                <div className={`${styles.mensagemErro} ${showErrorMessage ? styles.show : ""}`} style={{ marginTop: showMessage ? "10px" : 0 }}>
+                    <MSIcon name="error" size={16} fill={1} />
+                    <span>{messageError}</span>
+                </div>
+            </div>
 
             {/* CABEÇALHO COM CARDS DE ESTATÍSTICAS */}
             <div className={`${styles.headerCard} p-4`}>
@@ -88,7 +156,8 @@ const ListaUsuario = () => {
                             Gerencie os membros da sua organização e suas permissões de acesso.
                         </p>
                     </div>
-                    <button className={`${styles.btnPrimary} btn d-flex align-items-center gap-2 px-4 py-2`}>
+                    <button className={`${styles.btnPrimary} btn d-flex align-items-center gap-2 px-4 py-2`}
+                        onClick={() => navigate('/dashboard/usuarios/criar-novo')}>
                         <i className="bi bi-plus-lg"></i>
                         <span>Novo Usuário</span>
                     </button>
@@ -241,7 +310,10 @@ const ListaUsuario = () => {
                                                     <button
                                                         className={`${styles.btnAction} btn text-danger`}
                                                         title="Desativar"
-                                                        onClick={() => handleDesativar(usuario)}
+                                                        onClick={() => {
+                                                            setForm(usuario);
+                                                            setModalExclusaoAberto(true);
+                                                        }}
                                                     >
                                                         <i className="bi bi-trash3"></i>
                                                     </button>
@@ -262,6 +334,15 @@ const ListaUsuario = () => {
                     </div>
                 )}
             </div>
+
+
+            {modalExclusaoAberto && (
+                <ModalConfirmacaoExclusao
+                    nomeAlvo={form.Nome}
+                    onClose={() => setModalExclusaoAberto(false)}
+                    onConfirmar={handleExcluirUsuario}
+                />
+            )}
         </div>
     );
 };

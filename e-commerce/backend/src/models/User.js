@@ -2,19 +2,21 @@ const { sql, conectar } = require("../config/db");
 const bcrypt = require("bcryptjs");
 
 class User {
-    static async create(nome, username, email, cpf, telefone, senha) {
+    static async create(infoUser) {
         try {
-            const hashedPassword = await bcrypt.hash(senha, 10);
+            const hashedPassword = await bcrypt.hash(infoUser.senha, 10);
+            const role = infoUser.role || "user"
 
             const pool = await conectar();
             const result = await pool.request()
-                .input("Nome", sql.NVarChar(100), nome)
-                .input("Username", sql.NVarChar(100), username)
-                .input("Email", sql.NVarChar(150), email)
-                .input("CPF", sql.Char(11), cpf)
-                .input("Telefone", sql.Char(11), telefone)
+                .input("Nome", sql.NVarChar(100), infoUser.nome)
+                .input("Username", sql.NVarChar(100), infoUser.username)
+                .input("Email", sql.NVarChar(150), infoUser.email)
+                .input("CPF", sql.Char(11), infoUser.cpf)
+                .input("Telefone", sql.Char(11), infoUser.telefone)
                 .input("Senha", sql.NVarChar(200), hashedPassword)
-                .query("INSERT INTO Usuarios (Nome, Username, Email, CPF, Telefone, Senha) VALUES (@Nome, @Username, @Email, @CPF, @Telefone, @Senha)");
+                .input("Role", sql.NVarChar(20), role)
+                .query("INSERT INTO Usuarios (Nome, Username, Email, CPF, Telefone, Senha, Role) VALUES (@Nome, @Username, @Email, @CPF, @Telefone, @Senha, @Role)");
 
             return result;
         } catch (error) {
@@ -113,6 +115,20 @@ class User {
                 fields.push("Telefone = @Telefone");
             }
 
+            if (userData.role !== undefined) {
+                request.input("Role", sql.NVarChar(20), userData.role);
+                fields.push("Role = @Role");
+            }
+
+            if (userData.ativo !== undefined) {
+                request.input("Ativo", sql.Bit, userData.ativo);
+                fields.push("Ativo = @Ativo");
+            }
+
+            if (fields.length === 0) {
+                return null; // nada pra atualizar
+            }
+
             query += fields.join(", ");
             query += " WHERE Id = @Id";
 
@@ -191,7 +207,7 @@ class User {
             let query = "UPDATE Endereco SET ";
 
             const fields = [];
-            
+
             if (updates.Rua !== undefined) {
                 request.input("Rua", sql.VarChar(150), updates.Rua);
                 fields.push("Rua = @Rua");
@@ -232,5 +248,53 @@ class User {
         }
     }
 
+    static async anonimizar(id) {
+        try {
+            const pool = await conectar();
+
+            // CPF e Telefone são CHAR(11) NOT NULL UNIQUE — precisam de um valor
+            // de 11 caracteres, único por usuário, senão a query quebra a constraint.
+            const cpfAnonimo = String(id).padStart(11, "9");
+            const telefoneAnonimo = String(id).padStart(11, "8");
+
+            const result = await pool.request()
+                .input("Id", sql.Int, id)
+                .input("Nome", sql.NVarChar(100), `Usuário Excluído #${id}`)
+                .input("Username", sql.NVarChar(100), `usuario_excluido_${id}`)
+                .input("Email", sql.NVarChar(150), `excluido_${id}@anonimizado.local`)
+                .input("CPF", sql.Char(11), cpfAnonimo)
+                .input("Telefone", sql.Char(11), telefoneAnonimo)
+                .input("Ativo", sql.Bit, 0)
+                .query(`
+                UPDATE Usuarios
+                SET Nome = @Nome,
+                    Username = @Username,
+                    Email = @Email,
+                    CPF = @CPF,
+                    Telefone = @Telefone,
+                    Ativo = @Ativo
+                WHERE Id = @Id
+            `);
+
+            return result;
+        } catch (error) {
+            console.log("Erro ao anonimizar usuário:", error);
+            throw error;
+        }
+    }
+
+    static async deletarEndereco(idEndereco) {
+        try {
+            const pool = await conectar();
+            const result = await pool.request()
+                .input("Id_endereco", sql.Int, idEndereco)
+                .query("DELETE FROM Endereco WHERE Id_endereco = @Id_endereco");
+            return result;
+        } catch (error) {
+            throw error; 
+        }
+    }
+
 }
+
 module.exports = User;

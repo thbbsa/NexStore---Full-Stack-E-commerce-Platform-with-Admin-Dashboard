@@ -17,6 +17,21 @@ export async function getMe() {
   return data;
 }
 
+export async function getUserById(id) {
+  const response = await fetch(`${API_URL}/user/${id}`, {
+    mothod: "GET",
+    credentials: "include",
+  })
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw data;
+  }
+
+  return data;
+}
+
 export async function storeUser(user) {
   if (user.Id) {
     // UPDATE
@@ -34,6 +49,13 @@ export async function storeUser(user) {
   }
 }
 
+export async function excluirUsuario(id) {
+  return await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
+
 export async function logout() {
   await fetch(`${API_URL}/logout`, {
     method: "POST",
@@ -41,13 +63,24 @@ export async function logout() {
   });
 }
 
-export async function storeEndereco(endereco, numero = "", complemento = "") {
-  return await fetch(`${API_URL}/criar-endereco`, {
+export async function storeEndereco(endereco, numero = "", complemento = "", id = null) {
+  const url = id
+    ? `${API_URL}/${id}/criar-endereco`
+    : `${API_URL}/criar-endereco`;
+
+  return await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include", // importante para enviar o cookie de autenticação
+    credentials: "include",
     body: JSON.stringify({ ...endereco, numero, complemento }),
-  })
+  });
+}
+
+export async function deletarEndereco(idEndereco) {
+  return await fetch(`${API_URL}/endereco/${idEndereco}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
 }
 
 export async function getEndereco({ signal }) {
@@ -56,6 +89,21 @@ export async function getEndereco({ signal }) {
     credentials: "include",
     signal: signal
   })
+}
+
+export async function getEnderecosByUserId(id) {
+  const response = await fetch(`${API_URL}/enderecos/${id}`, {
+    method: 'GET',
+    credentials: "include",
+  })
+
+   const data = await response.json();
+
+  if (!response.ok) {
+    throw data;
+  }
+
+  return data;
 }
 
 export async function UpdateEndereco(endereco) {

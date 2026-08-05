@@ -58,6 +58,7 @@ export default function CheckoutPagamento() {
                     <span>{messageSuccess || "Sucesso"}</span>
                 </div>
             </div>
+            
             <div className="ck-wrap">
                 {/* Stepper */}
                 <div className="ck-stepper">

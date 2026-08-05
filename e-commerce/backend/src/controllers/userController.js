@@ -7,14 +7,14 @@ const SECRET_KEY = "48d321f254bb19fe1ffe7cba980b77fcba0f582bbcd1082415723d17ba35
 
 
 exports.register = async (req, res) => {
-    const { nome, username, email, cpf, telefone, senha } = req.body;
+    const infoUser = req.body;
 
 
     try {
-        const existingUser = await User.findByUsername(username);
-        const existingEmail = await User.findByEmail(email);
-        const existingCPF = await User.findByCPF(cpf);
-        const existingTelefone = await User.findByTelefone(telefone);
+        const existingUser = await User.findByUsername(infoUser.username);
+        const existingEmail = await User.findByEmail(infoUser.email);
+        const existingCPF = await User.findByCPF(infoUser.cpf);
+        const existingTelefone = await User.findByTelefone(infoUser.telefone);
 
         if (existingUser) {
             return res.status(400).json({ message: "Username já existe." });
@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: "Telefone já registrado." });
         }
 
-        const user = await User.create(nome, username, email, cpf, telefone, senha);
+        const user = await User.create(infoUser);
         res.status(201).json({ message: "Usuário registrado com sucesso!", user });
     } catch (error) {
         res.status(500).json({ message: "Erro ao registrar usuário.", error });
@@ -94,6 +94,19 @@ exports.getMe = async (req, res) => {
     }
 }
 
+exports.getUserById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findById(id)
+
+        res.status(200).json({ message: "Usuario buscado com sucesso!", user });
+    } catch (error) {
+        console.log("Erro ao carregar usuario:", error);
+        res.status(500).json({ message: "Erro ao carregar usuario." });
+    }
+}
+
 exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
@@ -151,19 +164,18 @@ exports.createEndereco = async (req, res) => {
 
     try {
         const decoded = jwt.decode(token, SECRET_KEY);
-        const userId = decoded.id;
+        const userIdAlvo = req.params.id || decoded.id;
 
         const { logradouro, numero, complemento, bairro, localidade, estado, cep } = req.body;
 
-        console.log(req.body)
 
-        const endereco = await User.getEndereco(userId);
+        const endereco = await User.getEndereco(userIdAlvo);
 
-        if (endereco.length >= 20) {
+        if (endereco.length >= 5) {
             return res.status(400).json({ message: "Limite de endereços atingido. Exclua um endereço para adicionar outro." });
         }
         
-        await User.createEndereco(userId, logradouro, numero, complemento, bairro, localidade, estado, cep);
+        await User.createEndereco(userIdAlvo, logradouro, numero, complemento, bairro, localidade, estado, cep);
         
         res.status(200).json({ message: "Endereço criado com sucesso!" });
     } catch (error) {
@@ -189,6 +201,18 @@ exports.getEndereco = async (req, res) => {
         }
 
         res.status(200).json(endereco);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao buscar endereço" });
+    }
+}
+
+exports.getEnderecosByUserId = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const enderecos = await User.getEndereco(id);
+
+        res.status(200).json({ message: "Endereços buscado com sucesso.", enderecos });
     } catch (error) {
         res.status(500).json({ message: "Erro ao buscar endereço" });
     }
@@ -222,3 +246,43 @@ exports.updateEndereco = async (req, res) => {
     }
 
 }
+
+exports.excluirUsuario = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado." });
+        }
+
+        await User.anonimizar(id);
+
+        res.status(200).json({ message: "Usuário excluído com sucesso." });
+    } catch (error) {
+        console.log("Erro ao excluir usuário:", error);
+        res.status(500).json({ message: "Erro ao excluir usuário." });
+    }
+};
+
+exports.deletarEndereco = async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const result = await User.deletarEndereco(id);
+
+        if (result.rowsAffected[0] === 0) {
+            return res.status(404).json({ message: "Endereço não encontrado." });
+        }
+
+        res.status(200).json({ message: "Endereço excluído com sucesso!" });
+    } catch (error) {
+        if (error.number === 547) {
+            return res.status(400).json({
+                message: "Este endereço não pode ser excluído porque está vinculado a um ou mais pedidos."
+            });
+        }
+        console.log("Erro ao excluir endereço:", error);
+        res.status(500).json({ message: "Erro ao excluir endereço." });
+    }
+};

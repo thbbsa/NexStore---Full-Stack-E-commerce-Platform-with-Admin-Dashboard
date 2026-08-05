@@ -30,6 +30,7 @@ import { CheckoutProvider } from './context/CheckoutContext/CheckoutContext.jsx'
 import ProtectedRoute from "./componentes/ProtectedRoute/ProtectedRoute.jsx";
 
 import "./css/index.css"
+import AdicionarUsuario from './componentes/DashBoard/Usuarios/AdicionarUsuario.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -66,6 +67,7 @@ createRoot(document.getElementById('root')).render(
               {/* usuários */}
               <Route path="usuarios" element={<ListaUsuarios />} />
               <Route path="usuarios/editar/:id" element={<EditarUsuario />} />
+              <Route path="usuarios/criar-novo" element={<AdicionarUsuario />} />
             </Route>
 
           </Routes>

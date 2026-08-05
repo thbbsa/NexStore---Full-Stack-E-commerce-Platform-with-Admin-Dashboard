@@ -1,0 +1,136 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+.modalCard {
+    background: #12141c;
+    border: 1px solid #262a36;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 440px;
+    margin: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #262a36;
+}
+
+.modalTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.btnFechar {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btnFechar:hover {
+    background: #1c1f2a;
+    color: #e5e7eb;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.textoAviso {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+}
+
+.textoAviso strong {
+    color: #f3f4f6;
+}
+
+.labelCustom {
+    display: block;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    margin-bottom: 0.4rem;
+}
+
+.inputCustom {
+    width: 100%;
+    background: #1a1d27;
+    border: 1px solid #2e3340;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    color: #e5e7eb;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.inputCustom:focus {
+    border-color: #ef4444;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #262a36;
+}
+
+.btnSecondary {
+    background: transparent;
+    border: 1px solid #2e3340;
+    color: #cbd5e1;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: #1c1f2a;
+}
+
+.btnDanger {
+    background: #dc2626;
+    border: none;
+    color: #fff;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.btnDanger:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.btnDanger:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
