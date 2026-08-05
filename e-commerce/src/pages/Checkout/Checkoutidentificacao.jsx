@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe, getEndereco, storeEndereco, UpdateEndereco } from "../../services/userService";
-import { useContext } from "react";
 import { CarrinhoContext } from "../../context/Carrinho/CarrinhoContext";
-import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext"
+import { CheckoutContext } from "../../context/CheckoutContext/CheckoutContext";
 import "./CheckoutIdentificacao.css";
 import { useCheckoutIdentificacao } from "./hook/useCheckoutIdentificacao";
 import { useAddress } from "./hook/useAdress";
@@ -30,29 +29,33 @@ const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
 export default function CheckoutIdentificacao() {
   const [adicionandoNovo, setAdicionandoNovo] = useState(false);
   const [entrega, setEntrega] = useState("normal");
+  const [erroForm, setErroForm] = useState("");
+  const [erroSelecao, setErroSelecao] = useState("");
 
   const navigate = useNavigate();
   const { carrinho, calcularTotal } = useContext(CarrinhoContext);
-
-  const { atualizarDados } = useContext(CheckoutContext)
+  const { atualizarDados } = useContext(CheckoutContext);
 
   const {
     user,
     enderecoSelecionado,
-    setEnderecoSelecionado
-  } = useCheckoutIdentificacao()
+    setEnderecoSelecionado,
+    buscarUsuario
+  } = useCheckoutIdentificacao();
 
   const {
-    endereco, 
-    setEndereco, 
+    endereco,
+    setEndereco,
     completeAddressFields
-  } = useAddress()
+  } = useAddress();
 
   function handleChange(nomeCampo, valor) {
+    if (erroForm) setErroForm(""); // Limpa mensagem de erro ao digitar
+
     if (nomeCampo === "cep") {
       const cepLimpo = valor.replace(/\D/g, "");
       if (cepLimpo.length === 8) {
-        completeAdressFields(cepLimpo);
+        completeAddressFields(cepLimpo);
       }
     }
 
@@ -63,34 +66,64 @@ export default function CheckoutIdentificacao() {
   }
 
   function definirPrincipal(id) {
-    const endereco = user.Enderecos.find(e => e.id === id);
-    if (!endereco) return;
+    const enderecoObj = user?.Enderecos?.find(e => e.id === id);
+    if (!enderecoObj) return;
 
     UpdateEndereco({
-      Id_endereco: endereco.id,
-      Rua: endereco.rua,
-      Numero: endereco.numero,
-      Complemento: endereco.complemento,
-      Bairro: endereco.bairro,
-      Cidade: endereco.cidade,
-      Estado: endereco.estado,
-      Cep: endereco.cep,
+      Id_endereco: enderecoObj.id,
+      Rua: enderecoObj.rua,
+      Numero: enderecoObj.numero,
+      Complemento: enderecoObj.complemento,
+      Bairro: enderecoObj.bairro,
+      Cidade: enderecoObj.cidade,
+      Estado: enderecoObj.estado,
+      Cep: enderecoObj.cep,
       Principal: true
     });
   }
 
-
   async function saveEndereco() {
-    await storeEndereco(endereco);
-    setEndereco({
-      cep: "",
-      logradouro: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      localidade: "",
-      estado: ""
-    });
+    setErroForm("");
+
+    const camposObrigatorios = ["cep", "logradouro", "numero", "bairro", "localidade", "estado"];
+    const temCamposVazios = camposObrigatorios.some(
+      campo => !endereco[campo] || endereco[campo].toString().trim() === ""
+    );
+
+    if (temCamposVazios) {
+      setErroForm("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    try {
+      console.log(endereco)
+      const novoEnd = await storeEndereco(endereco, endereco.numero, endereco.complemento);
+
+      if (buscarUsuario) {
+        await buscarUsuario();
+      }
+
+      // 3. Se a API retornar o ID do novo endereço, seleciona ele automaticamente
+      if (novoEnd?.id || novoEnd?.Id_endereco) {
+        setEnderecoSelecionado(novoEnd.id || novoEnd.Id_endereco);
+      }
+
+      // 4. Limpa o formulário e fecha
+      setEndereco({
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        localidade: "",
+        estado: ""
+      });
+      setAdicionandoNovo(false);
+      setErroSelecao("");
+    } catch (err) {
+      console.error(err);
+      setErroForm("Ocorreu um erro ao salvar o endereço. Tente novamente.");
+    }
   }
 
   const freteValor = entrega === "expressa" ? 19.90 : 0;
@@ -131,10 +164,10 @@ export default function CheckoutIdentificacao() {
             <div className="ck-card-body">
               <div className="ck-user-grid">
                 {[
-                  { label: "Nome", icon: "badge", value: user.Nome },
-                  { label: "Email", icon: "mail", value: user.Email },
-                  { label: "Telefone", icon: "call", value: user.Telefone },
-                  { label: "CPF", icon: "lock", value: user.CPF || "***.***.***-**", locked: true },
+                  { label: "Nome", icon: "badge", value: user?.Nome },
+                  { label: "Email", icon: "mail", value: user?.Email },
+                  { label: "Telefone", icon: "call", value: user?.Telefone },
+                  { label: "CPF", icon: "lock", value: user?.CPF || "***.***.***-**", locked: true },
                 ].map(f => (
                   <div className="ck-user-field" key={f.label}>
                     <label>
@@ -163,11 +196,15 @@ export default function CheckoutIdentificacao() {
             </div>
             <div className="ck-card-body">
               <div className="ck-addr-list">
-                {user.Enderecos?.map(e => (
+                {user?.Enderecos?.map(e => (
                   <div
                     key={e.id}
                     className={`ck-addr-card${enderecoSelecionado === e.id ? " selected" : ""}`}
-                    onClick={() => { setEnderecoSelecionado(e.id); setAdicionandoNovo(false); }}
+                    onClick={() => {
+                      setEnderecoSelecionado(e.id);
+                      setAdicionandoNovo(false);
+                      setErroSelecao("");
+                    }}
                   >
                     <div className="ck-addr-radio">
                       <div className="ck-addr-radio-dot" />
@@ -187,7 +224,7 @@ export default function CheckoutIdentificacao() {
                 ))}
               </div>
 
-              <button className="ck-addr-new" onClick={() => setAdicionandoNovo(v => !v)}>
+              <button className="ck-addr-new" onClick={() => { setAdicionandoNovo(v => !v); setErroForm(""); }}>
                 <MSIcon name={adicionandoNovo ? "remove_circle" : "add_circle"} size={18} />
                 {adicionandoNovo ? "Cancelar" : "Adicionar novo endereço"}
               </button>
@@ -213,8 +250,16 @@ export default function CheckoutIdentificacao() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Mensagem de Erro Dinâmica do Formulário */}
+                  {erroForm && (
+                    <div className="span2" style={{ color: "#ff4d4f", fontSize: 13, marginTop: 4 }}>
+                      {erroForm}
+                    </div>
+                  )}
+
                   <div className="span2" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-                    <button className="ck-form-save-btn" onClick={(e) => saveEndereco()} >Salvar endereço</button>
+                    <button className="ck-form-save-btn" onClick={saveEndereco}>Salvar endereço</button>
                   </div>
                 </div>
               )}
@@ -305,7 +350,18 @@ export default function CheckoutIdentificacao() {
           </div>
 
           <div className="ck-summary-footer">
+            {/* Mensagem de Erro Dinâmica de Seleção de Endereço */}
+            {erroSelecao && (
+              <div style={{ color: "#ff4d4f", fontSize: 13, marginBottom: 8, textAlign: "center" }}>
+                {erroSelecao}
+              </div>
+            )}
+
             <button className="ck-btn-next" onClick={() => {
+              if (!enderecoSelecionado) {
+                setErroSelecao("Selecione um endereço para continuar.");
+                return;
+              }
               definirPrincipal(enderecoSelecionado);
               atualizarDados({
                 enderecoId: enderecoSelecionado,
@@ -319,7 +375,7 @@ export default function CheckoutIdentificacao() {
 
             <button className="ck-btn-back" onClick={() => navigate("/carrinho")}>
               <MSIcon name="arrow_back" size={15} />
-              Voltar à identificação
+              Voltar ao carrinho
             </button>
 
           </div>
