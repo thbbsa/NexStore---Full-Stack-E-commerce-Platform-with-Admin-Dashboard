@@ -167,6 +167,43 @@ class Pedido {
 
         return resultado.recordset;
     }
+
+    static async getPedidosStats() {
+        const pool = await conectar();
+        const resultado = await pool.request()
+            .query(`
+                SELECT 
+                COUNT(*) AS TotalPedidos,
+                SUM(CASE WHEN Status <> 'Cancelado' THEN Total ELSE 0 END) AS TotalVendas,
+                COUNT(CASE WHEN Status = 'Pendente' THEN 1 END) AS AguardandoPagamento,
+                COUNT(CASE WHEN Status = 'Pago' THEN 1 END) AS ParaEnviar
+            FROM Pedidos
+            `)
+        return resultado.recordset[0];
+    }
+
+    static async getPedidosInfo() {
+        const pool = await conectar();
+        const resultado = await pool.request()
+            .query(`
+                SELECT 
+                    p.Id AS PedidoId,
+                    p.DataPedido,
+                    p.Status AS PedidoStatus,
+                    p.Total,
+                    pg.Metodo AS MetodoPagamento,
+                    pg.Status AS StatusPagamento,
+                    e.Status AS StatusEntrega,
+                    u.Nome AS UsuarioNome,
+                    u.Email AS UsuarioEmail
+                    From Pedidos p
+                    INNER JOIN Pagamentos pg ON pg.PedidoId = p.Id
+                    INNER JOIN Entregas e ON e.PedidoId = p.Id
+                    INNER JOIN Usuarios u ON u.Id = p.UsuarioId
+            `)
+        return resultado.recordset;
+    }
+                    
 }
 
 

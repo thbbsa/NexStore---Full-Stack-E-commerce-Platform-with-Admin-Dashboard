@@ -1,38 +1,10 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import styles from "./css/Pedidos.module.css";
-
-const pedidosMock = [
-    {
-        id: 12345,
-        nome: "John Doe",
-        email: "john.doe@email.com",
-        data: "15/06/2023 14:30",
-        total: "R$ 150,00",
-        pagamento: "pago",
-        status: "entregue",
-    },
-    {
-        id: 12346,
-        nome: "Maria Oliveira",
-        email: "maria.oliveira@email.com",
-        data: "05/08/2026 11:20",
-        total: "R$ 890,00",
-        pagamento: "pago",
-        status: "enviado",
-    },
-    {
-        id: 12347,
-        nome: "Carlos Souza",
-        email: "carlos.souza@email.com",
-        data: "05/08/2026 13:45",
-        total: "R$ 120,50",
-        pagamento: "pendente",
-        status: "confirmado",
-    },
-];
+import { getPedidosStats, getPedidosInfo } from "../../../services/pedidoService";
 
 const statusMap = {
     pendente: { label: "Pendente", className: styles.badgePendente },
+    preparando: { label: "Preparando", className: styles.badgePendente },
     confirmado: { label: "Confirmado", className: styles.badgeConfirmado },
     enviado: { label: "Enviado", className: styles.badgeEnviado },
     transito: { label: "Em trânsito", className: styles.badgeTransito },
@@ -46,15 +18,71 @@ const pagamentoMap = {
 
 const getIniciais = (nome) =>
     nome
-        .split(" ")
+        ?.split(" ")
         .map((p) => p[0])
         .slice(0, 2)
         .join("")
-        .toUpperCase();
+        .toUpperCase() || "";
+
+// remove acentos e deixa minúsculo, ex: "Em Trânsito" -> "em transito"
+const normalizarStatus = (valor) =>
+    valor
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") || "";
 
 const Pedido = () => {
     const [carregando, setCarregando] = useState(false);
     const [erro, setErro] = useState(null);
+    const [stats, setStats] = useState(null);
+    const [pedidosInfo, setPedidosInfo] = useState(null);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            setCarregando(true);
+            setErro(null);
+
+            try {
+                const response = await getPedidosStats();
+                setCarregando(false);
+                setStats(response.stats);
+            } catch (error) {
+                setErro("Erro ao carregar estatísticas de pedidos.");
+                setCarregando(false);
+            }
+        };
+
+        const loadPedidosInfo = async () => {
+            setCarregando(true);
+            setErro(null);
+
+            try {
+                const pedidosInfo = await getPedidosInfo();
+
+                const pedidosFormatados = pedidosInfo.info.map((p) => ({
+                    id: p.PedidoId,
+                    nome: p.UsuarioNome,
+                    email: p.UsuarioEmail,
+                    data: new Date(p.DataPedido).toLocaleString("pt-BR"),
+                    total: p.Total.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                    }),
+                    pagamento: normalizarStatus(p.StatusPagamento),
+                    status: normalizarStatus(p.StatusEntrega),
+                }));
+
+                setPedidosInfo(pedidosFormatados);
+                setCarregando(false);
+            } catch (error) {
+                setErro("Erro ao carregar informações de pedidos.");
+                setCarregando(false);
+            }
+        };
+
+        loadPedidosInfo();
+        loadStats();
+    }, []);
 
     return (
         <div className={`${styles.pedidoContainer} p-4 d-flex flex-column gap-4 text-white`}>
@@ -76,7 +104,7 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Total pedidos</h5>
-                                <p className={styles.statValue}>142</p>
+                                <p className={styles.statValue}>{stats?.TotalPedidos || 142}</p>
                             </div>
                         </div>
                     </div>
@@ -88,7 +116,9 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Faturamento</h5>
-                                <p className={styles.statValue}>R$ 18.450,00</p>
+                                <p className={styles.statValue}>
+                                    R$ {stats?.TotalVendas?.toLocaleString("pt-BR") || "18.450,00"}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -100,7 +130,7 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Aguardando pagamento</h5>
-                                <p className={styles.statValue}>12</p>
+                                <p className={styles.statValue}>{stats?.AguardandoPagamento}</p>
                             </div>
                         </div>
                     </div>
@@ -112,7 +142,7 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Para enviar</h5>
-                                <p className={styles.statValue}>8</p>
+                                <p className={styles.statValue}>{stats?.ParaEnviar}</p>
                             </div>
                         </div>
                     </div>
@@ -168,7 +198,10 @@ const Pedido = () => {
             <div className={`${styles.tableCard} p-4`}>
                 {carregando ? (
                     <div className="text-center py-5 text-secondary">
-                        <div className="spinner-border spinner-border-sm me-2 text-primary" role="status"></div>
+                        <div
+                            className="spinner-border spinner-border-sm me-2 text-primary"
+                            role="status"
+                        ></div>
                         Carregando pedidos...
                     </div>
                 ) : erro ? (
@@ -178,37 +211,58 @@ const Pedido = () => {
                         <table className={`${styles.table} table table-borderless mb-0 align-middle`}>
                             <thead>
                                 <tr className={styles.thead}>
-                                    <th className="p-3 ps-4 fw-normal" style={{ width: "80px" }}>ID</th>
+                                    <th className="p-3 ps-4 fw-normal" style={{ width: "80px" }}>
+                                        ID
+                                    </th>
                                     <th className="p-3 fw-normal">Cliente</th>
                                     <th className="p-3 fw-normal">Data / Hora</th>
                                     <th className="p-3 fw-normal">Total</th>
                                     <th className="p-3 fw-normal">Pagamento</th>
                                     <th className="p-3 fw-normal">Status</th>
-                                    <th className="p-3 pe-4 fw-normal text-end" style={{ width: "140px" }}>Ações</th>
+                                    <th
+                                        className="p-3 pe-4 fw-normal text-end"
+                                        style={{ width: "140px" }}
+                                    >
+                                        Ações
+                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                {pedidosMock.map((pedido) => {
-                                    const status = statusMap[pedido.status];
-                                    const pagamento = pagamentoMap[pedido.pagamento];
+                                {pedidosInfo?.map((pedido) => {
+                                    const status = statusMap[pedido.status] ?? {
+                                        label: pedido.status || "—",
+                                        className: "",
+                                    };
+                                    const pagamento = pagamentoMap[pedido.pagamento] ?? {
+                                        label: pedido.pagamento || "—",
+                                        className: "",
+                                    };
 
                                     return (
                                         <tr key={pedido.id} className={styles.row}>
                                             <td className={`p-3 ps-4 ${styles.muted}`}>#{pedido.id}</td>
                                             <td className="p-3">
                                                 <div className={styles.clienteCell}>
-                                                    <div className={styles.avatar}>{getIniciais(pedido.nome)}</div>
+                                                    <div className={styles.avatar}>
+                                                        {getIniciais(pedido.nome)}
+                                                    </div>
                                                     <div className={styles.clienteInfo}>
-                                                        <span className={styles.clienteNome}>{pedido.nome}</span>
-                                                        <span className={styles.clienteEmail}>{pedido.email}</span>
+                                                        <span className={styles.clienteNome}>
+                                                            {pedido.nome}
+                                                        </span>
+                                                        <span className={styles.clienteEmail}>
+                                                            {pedido.email}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className={`p-3 ${styles.muted}`}>{pedido.data}</td>
                                             <td className={`p-3 ${styles.total}`}>{pedido.total}</td>
                                             <td className="p-3">
-                                                <span className={`${styles.badge} ${pagamento.className}`}>
+                                                <span
+                                                    className={`${styles.badge} ${pagamento.className}`}
+                                                >
                                                     {pagamento.label}
                                                 </span>
                                             </td>

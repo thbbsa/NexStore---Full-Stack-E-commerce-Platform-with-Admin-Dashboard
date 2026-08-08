@@ -73,6 +73,8 @@ exports.criarPedido = async (req, res) => {
 exports.getPedido = async (req, res) => {
     const id = req.params.id
 
+    console.log(id)
+
     if (!id) {
         return res.status(400).json({
             message: "Id do pedido não encontrado!"
@@ -110,6 +112,35 @@ exports.getPedidos = async (req, res) => {
 
         res.status(201).json({message: "Pedidos Encontrados com sucesso", pedidos})
     } catch (Error) {
+        console.log(error)
+
+        res.status(500).json({
+            message: "Erro interno"
+        });
+    }
+}
+
+
+exports.getPedidosStats = async (req, res) => {
+    try {
+        const stats = await Pedido.getPedidosStats();
+
+        res.status(201).json({message: "Estatísticas de pedidos encontradas com sucesso", stats})
+    } catch (error) {
+        console.log(error)
+
+        res.status(500).json({
+            message: "Erro interno"
+        });
+    }
+}
+
+exports.getPedidosInfo = async (req, res) => {
+    try {
+        const info = await Pedido.getPedidosInfo();
+
+        res.status(201).json({message: "Informações de pedidos encontradas com sucesso", info})
+    } catch (error) {
         console.log(error)
 
         res.status(500).json({
