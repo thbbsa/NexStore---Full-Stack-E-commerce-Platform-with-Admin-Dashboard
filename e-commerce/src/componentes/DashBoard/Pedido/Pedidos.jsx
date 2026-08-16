@@ -36,6 +36,10 @@ const Pedido = () => {
     const [erro, setErro] = useState(null);
     const [stats, setStats] = useState(null);
     const [pedidosInfo, setPedidosInfo] = useState(null);
+    const [pesquisa, setPesquisa] = useState("");
+    const [filtroStatus, setFiltroStatus] = useState("");
+    const [filtroPagamento, setFiltroPagamento] = useState("");
+    const [filtroData, setFiltroData] = useState("");
 
     useEffect(() => {
         const loadStats = async () => {
@@ -63,6 +67,7 @@ const Pedido = () => {
                     id: p.PedidoId,
                     nome: p.UsuarioNome,
                     email: p.UsuarioEmail,
+                    dataRaw: new Date(p.DataPedido),
                     data: new Date(p.DataPedido).toLocaleString("pt-BR"),
                     total: p.Total.toLocaleString("pt-BR", {
                         style: "currency",
@@ -83,6 +88,21 @@ const Pedido = () => {
         loadPedidosInfo();
         loadStats();
     }, []);
+
+    const filteredPedidos = pedidosInfo?.filter((pedido) => {
+        const pesquisaLower = pesquisa.toLowerCase();
+        const pesquisaEncontrada = pedido.nome.toLowerCase().includes(pesquisaLower) || pedido.id.toString().includes(pesquisaLower);
+        const statusMatch = !filtroStatus || pedido.status === filtroStatus;
+        const pagamentoMatch = !filtroPagamento || pedido.pagamento === filtroPagamento;
+        const dataMatch =
+            !filtroData ||
+            (filtroData === "7dias" && pedido.dataRaw >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+            (filtroData === "30dias" && pedido.dataRaw >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+
+        return pesquisaEncontrada && statusMatch && pagamentoMatch && dataMatch;
+    });
+
+
 
     return (
         <div className={`${styles.pedidoContainer} p-4 d-flex flex-column gap-4 text-white`}>
@@ -161,12 +181,13 @@ const Pedido = () => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Buscar por ID ou cliente..."
+                                onChange={(e) => setPesquisa(e.target.value)}
                             />
                         </div>
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`}>
+                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroStatus(e.target.value)}>
                             <option value="">Status: Todos</option>
                             <option value="pendente">Pendente</option>
                             <option value="confirmado">Confirmado</option>
@@ -177,7 +198,7 @@ const Pedido = () => {
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`}>
+                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroPagamento(e.target.value)}>
                             <option value="">Pagamento: Todos</option>
                             <option value="pago">Pago</option>
                             <option value="pendente">Aguardando pagamento</option>
@@ -185,7 +206,7 @@ const Pedido = () => {
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`}>
+                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroData(e.target.value)}>
                             <option value="">Data: Hoje</option>
                             <option value="7dias">Últimos 7 dias</option>
                             <option value="30dias">Últimos 30 dias</option>
@@ -229,7 +250,7 @@ const Pedido = () => {
                             </thead>
 
                             <tbody>
-                                {pedidosInfo?.map((pedido) => {
+                                {filteredPedidos?.map((pedido) => {
                                     const status = statusMap[pedido.status] ?? {
                                         label: pedido.status || "—",
                                         className: "",
