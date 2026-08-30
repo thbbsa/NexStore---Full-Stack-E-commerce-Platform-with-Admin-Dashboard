@@ -1,0 +1,288 @@
+/* ===== Paleta de cores ===== */
+:root {
+    --bg-page: #0a0e17;
+    --bg-modal: #0f1620;
+    --bg-card: #111a28;
+    --bg-item: #0e1622;
+    --bg-total: #111d2e;
+    --bg-footer: #0c131e;
+
+    --border-default: #1a2332;
+    --border-card: #1c2636;
+    --border-strong: #26344a;
+
+    --text-title: #f1f5f9;
+    --text-default: #e2e8f0;
+    --text-strong: #cbd5e1;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --accent-blue-light: #5fa8ff;
+    --accent-cyan: #5fd4ff;
+    --accent-blue: #3b6fe8;
+    --accent-blue-strong: #2563eb;
+    --accent-orange: #f5a524;
+    --accent-orange-bg: #3a2a0f;
+    --accent-green: #4ade80;
+    --accent-green-bg: #14321f;
+}
+
+/* ===== Overlay ===== */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 7, 13, 0.75);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    z-index: 50;
+    overflow-y: auto;
+}
+
+/* ===== Card do modal ===== */
+.modalCard {
+    width: 100%;
+    max-width: 800px;
+    background: var(--bg-modal);
+    border: 1px solid var(--border-default);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-default);
+}
+
+/* ===== Header ===== */
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 22px 26px;
+    border-bottom: 1px solid var(--border-default);
+    background: linear-gradient(180deg, #121b29 0%, var(--bg-modal) 100%);
+}
+
+.modalHeaderContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modalTitle {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent-blue-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.modalId {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-title);
+    margin: 0;
+}
+
+.btnFechar {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btnFechar:hover {
+    background: var(--border-strong);
+    color: var(--text-default);
+}
+
+/* ===== Body ===== */
+.modalBody {
+    padding: 22px 26px;
+}
+
+.modalSection {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 14px;
+    height: 100%;
+}
+
+.modalSectionTitle {
+    font-size: 11px;
+    color: var(--accent-blue-light);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+}
+
+.modalSectionContent {
+    font-size: 13.5px;
+    color: var(--text-default);
+    margin: 0 0 4px 0;
+}
+
+.modalSectionContentMuted {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ===== Cliente ===== */
+.clienteInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+/* ===== Itens do pedido ===== */
+.itemsList {
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.itemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--bg-item);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.itemName {
+    font-size: 13px;
+    color: var(--text-default);
+    margin: 0;
+}
+
+.itemQty {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin: 2px 0 0 0;
+}
+
+.itemPrice {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-default);
+}
+
+.itemRowTotal {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--bg-total);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-strong);
+}
+
+.totalValue {
+    font-size: 15px;
+    color: var(--accent-cyan);
+}
+
+/* ===== Badges de status ===== */
+.badgeWarning {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-orange-bg);
+    color: var(--accent-orange);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.badgeSuccess {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-green-bg);
+    color: var(--accent-green);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+/* ===== Footer ===== */
+.modalFooter {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 26px;
+    border-top: 1px solid var(--border-default);
+    background: var(--bg-footer);
+}
+
+.btnSecundario {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btnSecundario:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-default);
+}
+
+.btnPrimario {
+    background: var(--accent-blue-strong);
+    border: 1px solid var(--accent-blue-strong);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.btnPrimario:hover {
+    filter: brightness(1.1);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 480px) {
+    .modalHeader,
+    .modalBody,
+    .modalFooter {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}

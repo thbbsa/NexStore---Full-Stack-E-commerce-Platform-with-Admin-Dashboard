@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import styles from "./css/Pedidos.module.css";
 import { getPedidosStats, getPedidosInfo } from "../../../services/pedidoService";
+import ModalDetalhesPedido from "../../../modalDetalhesPedido/modalDetalhesPedido";
 
 const statusMap = {
     pendente: { label: "Pendente", className: styles.badgePendente },
@@ -41,6 +42,8 @@ const Pedido = () => {
     const [filtroPagamento, setFiltroPagamento] = useState("");
     const [filtroData, setFiltroData] = useState("");
 
+    const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+
     useEffect(() => {
         const loadStats = async () => {
             setCarregando(true);
@@ -62,6 +65,7 @@ const Pedido = () => {
 
             try {
                 const pedidosInfo = await getPedidosInfo();
+
 
                 const pedidosFormatados = pedidosInfo.info.map((p) => ({
                     id: p.PedidoId,
@@ -293,7 +297,7 @@ const Pedido = () => {
                                                 </span>
                                             </td>
                                             <td className="p-3 pe-4 text-end">
-                                                <button className={styles.btnVer}>
+                                                <button className={styles.btnVer} onClick={() => setModalExclusaoAberto(true)}>
                                                     <i className="bi bi-eye"></i>
                                                     Detalhes
                                                 </button>
@@ -306,6 +310,12 @@ const Pedido = () => {
                     </div>
                 )}
             </div>
+
+            {modalExclusaoAberto && (
+                <ModalDetalhesPedido
+                    onClose={() => setModalExclusaoAberto(false)}
+                />
+            )}
         </div>
     );
 };

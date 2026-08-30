@@ -39,7 +39,6 @@ exports.criarPedido = async (req, res) => {
 
         for (const item of itens) {
             const produto = await Produto.getProduto(item.produtoId);
-            console.log(produto)
 
             if (!produto) {
                 return res.status(404).json({
@@ -72,8 +71,6 @@ exports.criarPedido = async (req, res) => {
 
 exports.getPedido = async (req, res) => {
     const id = req.params.id
-
-    console.log(id)
 
     if (!id) {
         return res.status(400).json({
