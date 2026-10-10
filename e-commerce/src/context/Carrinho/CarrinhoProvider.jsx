@@ -49,7 +49,7 @@ export function CarrinhoProvider({ children }) {
 
     function calcularTotal() {
         return carrinho.reduce(
-            (total, p) => total + p.Preco * p.quantidade,
+            (total, p) => total + (p.PrecoPromocional > 0 ? p.PrecoPromocional : p.Preco) * p.quantidade,
             0
         );
     }

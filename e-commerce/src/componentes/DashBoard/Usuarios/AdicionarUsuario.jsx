@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./css/AdicionarUsuario.module.css";
-import { storeUser } from "../../../services/userService.js";
+import { criarUsuarioAdmin } from "../../../services/userService.js";
 import { formatarTelefone, formatarCpf } from "../../../utils/formatters.js";
 
 const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
@@ -66,7 +66,7 @@ const AdicionarUsuario = () => {
             cpf: apenasNumeros(form.cpf),
         };
 
-        const response = await storeUser(payload);
+        const response = await criarUsuarioAdmin(payload);
 
         if (response.ok) {
             setForm({

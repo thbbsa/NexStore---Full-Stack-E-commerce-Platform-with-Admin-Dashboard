@@ -2,10 +2,10 @@ const sql = require("mssql");
 
 // Configuração da conexão
 const config = {
-    user: "sa",
-    password: "pw_user_app",
-    server: "localhost",
-    database: "SistemaEcommerce",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_NAME,
     options: {
         encrypt: false,
         trustServerCertificate: false

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { validadeCartaoValida } from "../../../utils/checkValidity";
-import { getMe, storePedido } from "../../../services/userService";
+import { storePedido } from "../../../services/userService";
 import { CheckoutContext } from "../../../context/CheckoutContext/CheckoutContext";
 import { CarrinhoContext } from "../../../context/Carrinho/CarrinhoContext";
 
@@ -81,15 +81,11 @@ export function useCheckoutPagamento(TABS) {
     async function armazenarDados() {
         setLoading(true)
         try {
-            const userData = await getMe();
-
             const payload = {
-                userId: userData.user.Id,
                 enderecoId: dadosCheckout.enderecoId,
-                total,
+                entrega: dadosCheckout.tipoEntrega?.id,
                 pagamento: {
                     metodo: TABS.find(t => t.id === metodo)?.label,
-                    valor: total,
                 },
                 itens: carrinho.map(({ Id, quantidade }) => ({
                     produtoId: Id,

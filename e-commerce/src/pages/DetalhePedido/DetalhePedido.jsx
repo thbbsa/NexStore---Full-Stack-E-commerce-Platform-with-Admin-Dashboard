@@ -61,6 +61,12 @@ export default function DetalhePedido() {
         }
     }
 
+    // soma preço unitário x quantidade de todos os itens do pedido
+    const totalProdutos = (pedidoDetalhe?.itens ?? []).reduce(
+        (total, item) => total + (item.precoUnitario || 0) * (item.quantidade || 1),
+        0
+    );
+
     if (loading) {
         return (
             <div className="pd-page">
@@ -115,25 +121,25 @@ export default function DetalhePedido() {
                             {pedidoDetalhe?.itens?.map((item) => (
                                 <div
                                     className="produto"
-                                    key={item.Id || item.id}
+                                    key={item.id}
                                 >
                                     <div className="produto-info">
                                         <div className="produto-cabecalho">
                                             <img
-                                                src={`http://localhost:3000${item.Imagem}`}
-                                                alt={item.Nome}
+                                                src={`http://localhost:3000${item.imagem}`}
+                                                alt={item.nome}
                                             />
 
-                                            <h3>{item.Nome}</h3>
+                                            <h3>{item.nome}</h3>
                                         </div>
 
-                                        <p>Quantidade: {item.Quantidade}</p>
+                                        <p>Quantidade: {item.quantidade}</p>
                                     </div>
 
                                     <div className="produto-preco">
                                         R${" "}
                                         {Number(
-                                            item.PrecoUnitario || 0
+                                            item.precoUnitario || 0
                                         ).toFixed(2)}
                                     </div>
                                 </div>
@@ -203,13 +209,13 @@ export default function DetalhePedido() {
 
                             <p>
                                 Pagamento:{" "}
-                                {pedidoDetalhe?.pagamento?.Metodo ||
+                                {pedidoDetalhe?.pagamento?.metodo ||
                                     "Não informado"}
                             </p>
 
                             <p>
                                 Status pagamento:{" "}
-                                {pedidoDetalhe?.pagamento?.Status ||
+                                {pedidoDetalhe?.pagamento?.status ||
                                     "Não informado"}
                             </p>
 
@@ -220,7 +226,7 @@ export default function DetalhePedido() {
 
                                 <span>
                                     R${" "}
-                                    {Number(pedidoDetalhe.itens?.map(item => item.PrecoUnitario)).toFixed(2)}
+                                    {totalProdutos.toFixed(2)}
                                 </span>
                             </div>
 

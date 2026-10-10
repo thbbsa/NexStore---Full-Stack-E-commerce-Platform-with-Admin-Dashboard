@@ -47,29 +47,29 @@ createRoot(document.getElementById('root')).render(
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
             {/* Produtos e Busca */}
             <Route path="/produtos" element={<BuscarProduto />} />
             <Route path="/produtos/:id" element={<ProductDetails />} />
-            
+
             {/* Carrinho e Checkout */}
             <Route path="/carrinho" element={<Carrinho />} />
             <Route path="/checkout/identificacao" element={<CheckoutIdentificacao />} />
             <Route path="/checkout/pagamento" element={<CheckoutPagamento />} />
             <Route path="/checkout/concluido/:pedidoId" element={<CheckoutConcluido />} />
-            
+
             {/* Pedidos do Cliente */}
-            <Route path="/detalhe-pedido/:pedidoId" element={<DetalhePedido />} />
-            <Route path="/meus-pedidos" element={<PedidoUsuarios />} />
+            <Route path="/detalhe-pedido/:pedidoId" element={<ProtectedRoute><DetalhePedido /></ProtectedRoute>} />
+            <Route path="/meus-pedidos" element={<ProtectedRoute><PedidoUsuarios /></ProtectedRoute>} />
 
             {/* --- ROTAS PROTEGIDAS DO CLIENTE --- */}
             <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
 
             {/* --- DASHBOARD ADMINISTRATIVO (PROTEGIDO) --- */}
-            <Route 
-              path="/dashboard" 
+            <Route
+              path="/dashboard"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly={true}>
                   <DashBoard />
                 </ProtectedRoute>
               }

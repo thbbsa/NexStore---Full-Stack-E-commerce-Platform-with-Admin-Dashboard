@@ -2,32 +2,39 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getMe } from "../../services/userService";
 
-const ProtectedRoute = ({ children }) => {
-    const [isAuth, setIsAuth] = useState(null);
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+    const [status, setStatus] = useState("loading");
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 const res = await getMe();
+
                 if (!res || !res.user) {
-                    setIsAuth(false);
+                    setStatus("login");
+                } else if (adminOnly && res.user.Role !== "admin") {
+                    setStatus("negado");
                 } else {
-                    setIsAuth(true);
+                    setStatus("ok");
                 }
             } catch (error) {
-                setIsAuth(false);
+                setStatus("login");
             }
         };
 
         checkAuth();
-    }, []);
+    }, [adminOnly]);
 
-    if (isAuth === null) {
+    if (status === "loading") {
         return <p>Carregando...</p>;
     }
 
-    if (!isAuth) {
-        return <Navigate to="/login" />;
+    if (status === "login") {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (status === "negado") {
+        return <Navigate to="/" replace />;
     }
 
     return children;

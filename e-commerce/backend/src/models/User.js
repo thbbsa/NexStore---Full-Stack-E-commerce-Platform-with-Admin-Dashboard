@@ -29,7 +29,8 @@ class User {
             const pool = await conectar();
             const result = await pool.request()
                 .input("Id", sql.Int, ID)
-                .query("SELECT * FROM Usuarios WHERE Id = @Id");
+                .query(`SELECT Id, Nome, Username, Email, CPF, Telefone, Role, Ativo, CriadoEm
+        FROM Usuarios WHERE Id = @Id`);
             return result.recordset[0];
         } catch (error) {
             throw error;
@@ -157,6 +158,16 @@ class User {
         } catch (error) {
             console.log("Erro ao atualizar endereço:", error);
         }
+    }
+
+    static async enderecoPertenceAoUsuario(idEndereco, usuarioId) {
+        const pool = await conectar();
+        const result = await pool.request()
+            .input("Id_endereco", sql.Int, idEndereco)
+            .input("UsuarioId", sql.Int, usuarioId)
+            .query(`SELECT 1 AS ok FROM Endereco
+                WHERE Id_endereco = @Id_endereco AND UsuarioId = @UsuarioId`);
+        return result.recordset.length > 0;
     }
 
     static async getEndereco(userId) {
@@ -291,7 +302,7 @@ class User {
                 .query("DELETE FROM Endereco WHERE Id_endereco = @Id_endereco");
             return result;
         } catch (error) {
-            throw error; 
+            throw error;
         }
     }
 

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import styles from "./css/Pedidos.module.css";
 import { getPedidosStats, getPedidosInfo } from "../../../services/pedidoService";
-import ModalDetalhesPedido from "../../../modalDetalhesPedido/modalDetalhesPedido";
+import ModalDetalhesPedido from "../../modalDetalhesPedido/modalDetalhesPedido";
 
 const statusMap = {
     pendente: { label: "Pendente", className: styles.badgePendente },
@@ -32,40 +32,58 @@ const normalizarStatus = (valor) =>
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "") || "";
 
+const isHoje = (data) => {
+    const hoje = new Date();
+    return (
+        data.getDate() === hoje.getDate() &&
+        data.getMonth() === hoje.getMonth() &&
+        data.getFullYear() === hoje.getFullYear()
+    );
+};
+
 const Pedido = () => {
-    const [carregando, setCarregando] = useState(false);
-    const [erro, setErro] = useState(null);
+    // estados separados por recurso: evita que um sobrescreva o loading/erro do outro
+    const [statsCarregando, setStatsCarregando] = useState(true);
+    const [statsErro, setStatsErro] = useState(null);
     const [stats, setStats] = useState(null);
+
+    const [pedidosCarregando, setPedidosCarregando] = useState(true);
+    const [pedidosErro, setPedidosErro] = useState(null);
     const [pedidosInfo, setPedidosInfo] = useState(null);
+
     const [pesquisa, setPesquisa] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
     const [filtroPagamento, setFiltroPagamento] = useState("");
     const [filtroData, setFiltroData] = useState("");
 
-    const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+    // guarda o id do pedido clicado, não apenas um boolean — é o que o modal precisa pra buscar os detalhes
+    const [pedidoSelecionadoId, setPedidoSelecionadoId] = useState(null);
 
     useEffect(() => {
         const loadStats = async () => {
-            setCarregando(true);
-            setErro(null);
+            setStatsCarregando(true);
+            setStatsErro(null);
 
             try {
                 const response = await getPedidosStats();
-                setCarregando(false);
                 setStats(response.stats);
             } catch (error) {
-                setErro("Erro ao carregar estatísticas de pedidos.");
-                setCarregando(false);
+                setStatsErro("Erro ao carregar estatísticas de pedidos.");
+            } finally {
+                setStatsCarregando(false);
             }
         };
 
+        loadStats();
+    }, []);
+
+    useEffect(() => {
         const loadPedidosInfo = async () => {
-            setCarregando(true);
-            setErro(null);
+            setPedidosCarregando(true);
+            setPedidosErro(null);
 
             try {
                 const pedidosInfo = await getPedidosInfo();
-
 
                 const pedidosFormatados = pedidosInfo.info.map((p) => ({
                     id: p.PedidoId,
@@ -82,31 +100,33 @@ const Pedido = () => {
                 }));
 
                 setPedidosInfo(pedidosFormatados);
-                setCarregando(false);
             } catch (error) {
-                setErro("Erro ao carregar informações de pedidos.");
-                setCarregando(false);
+                setPedidosErro("Erro ao carregar informações de pedidos.");
+            } finally {
+                setPedidosCarregando(false);
             }
         };
 
         loadPedidosInfo();
-        loadStats();
     }, []);
 
     const filteredPedidos = pedidosInfo?.filter((pedido) => {
         const pesquisaLower = pesquisa.toLowerCase();
-        const pesquisaEncontrada = pedido.nome.toLowerCase().includes(pesquisaLower) || pedido.id.toString().includes(pesquisaLower);
+        const pesquisaEncontrada =
+            pedido.nome.toLowerCase().includes(pesquisaLower) ||
+            pedido.id.toString().includes(pesquisaLower);
         const statusMatch = !filtroStatus || pedido.status === filtroStatus;
         const pagamentoMatch = !filtroPagamento || pedido.pagamento === filtroPagamento;
         const dataMatch =
             !filtroData ||
-            (filtroData === "7dias" && pedido.dataRaw >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
-            (filtroData === "30dias" && pedido.dataRaw >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+            (filtroData === "hoje" && isHoje(pedido.dataRaw)) ||
+            (filtroData === "7dias" &&
+                pedido.dataRaw >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+            (filtroData === "30dias" &&
+                pedido.dataRaw >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
 
         return pesquisaEncontrada && statusMatch && pagamentoMatch && dataMatch;
     });
-
-
 
     return (
         <div className={`${styles.pedidoContainer} p-4 d-flex flex-column gap-4 text-white`}>
@@ -128,7 +148,9 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Total pedidos</h5>
-                                <p className={styles.statValue}>{stats?.TotalPedidos || 142}</p>
+                                <p className={styles.statValue}>
+                                    {statsCarregando ? "…" : statsErro ? "—" : stats?.TotalPedidos ?? "—"}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -141,7 +163,11 @@ const Pedido = () => {
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Faturamento</h5>
                                 <p className={styles.statValue}>
-                                    R$ {stats?.TotalVendas?.toLocaleString("pt-BR") || "18.450,00"}
+                                    {statsCarregando
+                                        ? "…"
+                                        : statsErro
+                                        ? "—"
+                                        : `R$ ${stats?.TotalVendas?.toLocaleString("pt-BR") ?? "0,00"}`}
                                 </p>
                             </div>
                         </div>
@@ -154,7 +180,9 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Aguardando pagamento</h5>
-                                <p className={styles.statValue}>{stats?.AguardandoPagamento}</p>
+                                <p className={styles.statValue}>
+                                    {statsCarregando ? "…" : statsErro ? "—" : stats?.AguardandoPagamento ?? "—"}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -166,11 +194,17 @@ const Pedido = () => {
                             </div>
                             <div className={styles.statBody}>
                                 <h5 className={styles.statLabel}>Para enviar</h5>
-                                <p className={styles.statValue}>{stats?.ParaEnviar}</p>
+                                <p className={styles.statValue}>
+                                    {statsCarregando ? "…" : statsErro ? "—" : stats?.ParaEnviar ?? "—"}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {statsErro && (
+                    <p className="text-danger small px-3 mb-0">{statsErro}</p>
+                )}
             </div>
 
             {/* FILTROS UNIFICADOS EM CARD */}
@@ -191,7 +225,10 @@ const Pedido = () => {
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroStatus(e.target.value)}>
+                        <select
+                            className={`${styles.select} form-select`}
+                            onChange={(e) => setFiltroStatus(e.target.value)}
+                        >
                             <option value="">Status: Todos</option>
                             <option value="pendente">Pendente</option>
                             <option value="confirmado">Confirmado</option>
@@ -202,7 +239,10 @@ const Pedido = () => {
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroPagamento(e.target.value)}>
+                        <select
+                            className={`${styles.select} form-select`}
+                            onChange={(e) => setFiltroPagamento(e.target.value)}
+                        >
                             <option value="">Pagamento: Todos</option>
                             <option value="pago">Pago</option>
                             <option value="pendente">Aguardando pagamento</option>
@@ -210,18 +250,21 @@ const Pedido = () => {
                     </div>
 
                     <div className="col-6 col-md-4 col-lg-2">
-                        <select className={`${styles.select} form-select`} onChange={(e) => setFiltroData(e.target.value)}>
-                            <option value="">Data: Hoje</option>
+                        <select
+                            className={`${styles.select} form-select`}
+                            onChange={(e) => setFiltroData(e.target.value)}
+                        >
+                            <option value="">Data: Todos</option>
+                            <option value="hoje">Hoje</option>
                             <option value="7dias">Últimos 7 dias</option>
                             <option value="30dias">Últimos 30 dias</option>
-                            <option value="personalizado">Personalizado</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div className={`${styles.tableCard} p-4`}>
-                {carregando ? (
+                {pedidosCarregando  ? (
                     <div className="text-center py-5 text-secondary">
                         <div
                             className="spinner-border spinner-border-sm me-2 text-primary"
@@ -229,8 +272,8 @@ const Pedido = () => {
                         ></div>
                         Carregando pedidos...
                     </div>
-                ) : erro ? (
-                    <div className="text-center py-5 text-danger">{erro}</div>
+                ) : pedidosErro  ? (
+                    <div className="text-center py-5 text-danger">{pedidosErro}</div>
                 ) : (
                     <div className="table-responsive">
                         <table className={`${styles.table} table table-borderless mb-0 align-middle`}>
@@ -297,7 +340,10 @@ const Pedido = () => {
                                                 </span>
                                             </td>
                                             <td className="p-3 pe-4 text-end">
-                                                <button className={styles.btnVer} onClick={() => setModalExclusaoAberto(true)}>
+                                                <button
+                                                    className={styles.btnVer}
+                                                    onClick={() => setPedidoSelecionadoId(pedido.id)}
+                                                >
                                                     <i className="bi bi-eye"></i>
                                                     Detalhes
                                                 </button>
@@ -311,9 +357,10 @@ const Pedido = () => {
                 )}
             </div>
 
-            {modalExclusaoAberto && (
+            {pedidoSelecionadoId && (
                 <ModalDetalhesPedido
-                    onClose={() => setModalExclusaoAberto(false)}
+                    pedidoId={pedidoSelecionadoId}
+                    onClose={() => setPedidoSelecionadoId(null)}
                 />
             )}
         </div>

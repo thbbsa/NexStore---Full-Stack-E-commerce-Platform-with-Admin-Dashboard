@@ -1,7 +1,10 @@
 const express = require("express");
+const authMiddleware = require("../middleware/auth");
+const requireAdmin = require("../middleware/admin");
 
 const {
   register,
+  criarUsuario,
   login,
   logout,
   getMe,
@@ -33,41 +36,41 @@ const upload = require("../middleware/upload");
 
 const router = express.Router();
 
-// ---------- Auth ----------
+// ---------- Públicas ----------
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
+router.get("/produtos", controller);
+
+// ---------- Produtos (rotas fixas antes de /:id) ----------
+router.get("/produtos/admin", authMiddleware, requireAdmin, listarProdutosAdmin);
+router.get("/produtos/:id", buscarProduto);
+router.post("/produtos", authMiddleware, requireAdmin, upload.single("imagem"), criarProduto);
+router.patch("/produtos/:id", authMiddleware, requireAdmin, atualizarProduto);
+router.patch("/produtos/:id/desativar", authMiddleware, requireAdmin, desativarProduto);
 
 // ---------- Usuário ----------
-router.get("/perfil", getMe);
-router.patch("/perfil/:id", updateUser);
-router.get("/user/:id", getUserById);
-router.delete("/:id", excluirUsuario);
-router.get("/usuarios", getUsuarios);
+router.get("/perfil", authMiddleware, getMe);
+router.patch("/perfil/:id", authMiddleware, updateUser);
+router.get("/user/:id", authMiddleware, requireAdmin, getUserById);
+router.get("/usuarios", authMiddleware, requireAdmin, getUsuarios);
+router.post("/usuarios", authMiddleware, requireAdmin, criarUsuario);
+router.delete("/:id", authMiddleware, requireAdmin, excluirUsuario);
 
 // ---------- Endereço ----------
-router.post("/criar-endereco", createEndereco);
-router.post("/:id/criar-endereco", createEndereco);
-router.get("/meu-endereco", getEndereco);
-router.get("/enderecos/:id", getEnderecosByUserId);
-router.patch("/atualizar-endereco/:id", updateEndereco);
-router.delete("/endereco/:id", deletarEndereco);
-
-// ---------- Produtos ----------
-router.post("/produtos", upload.single("imagem"), criarProduto);
-router.get("/produtos/admin", listarProdutosAdmin);
-router.get("/produtos", controller);
-router.get("/produtos/:id", buscarProduto);
-router.patch("/produtos/:id", atualizarProduto);
-router.patch("/produtos/:id/desativar", desativarProduto);
+router.post("/criar-endereco", authMiddleware, createEndereco);
+router.post("/:id/criar-endereco", authMiddleware, requireAdmin, createEndereco);
+router.get("/meu-endereco", authMiddleware, getEndereco);
+router.get("/enderecos/:id", authMiddleware, requireAdmin, getEnderecosByUserId);
+router.patch("/atualizar-endereco/:id", authMiddleware, updateEndereco);
+router.delete("/endereco/:id", authMiddleware, deletarEndereco);
 
 // ---------- Pedidos ----------
-router.get("/pedidos-info", getPedidosInfo);
-router.get("/stats", getPedidosStats);
-
-router.post("/criar-pedido", criarPedido);
-router.get("/pedidos/:id", getPedido);
-router.get("/meus-pedidos", getPedidos);
+router.get("/pedidos-info", authMiddleware, requireAdmin, getPedidosInfo);
+router.get("/stats", authMiddleware, requireAdmin, getPedidosStats);
+router.post("/criar-pedido", authMiddleware, criarPedido);
+router.get("/pedidos/:id", authMiddleware, getPedido);
+router.get("/meus-pedidos", authMiddleware, getPedidos);
 
 
 module.exports = router;

@@ -1,72 +1,67 @@
 const Pedido = require("../models/Pedido");
-const Produto = require("../models/Produto");
-const PedidoItem = require("../models/PedidoItem");
-const Pagamento = require("../models/Pagamento");
-const PedidoEndereco = require("../models/PedidoEndereco");
-
 
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = "48d321f254bb19fe1ffe7cba980b77fcba0f582bbcd1082415723d17ba35d6165198af9f7de15769a018f2c0276d5f8200dc1147ba9aebfed0599c24dcf2e5d2"
-
-
+const SECRET_KEY = process.env.JWT_SECRET;
 
 exports.criarPedido = async (req, res) => {
-    const { userId, enderecoId, total, pagamento } = req.body;
-    const { itens } = req.body;
+    const usuarioId = req.user.id;
+    const { enderecoId, pagamento, itens, entrega } = req.body;
 
-    if (!userId) {
-        return res.status(400).json({ message: "Usuario é obrigatório" });
+    const metodo = ["Cartao", "Pix", "Boleto"].find(
+        m => m.toLowerCase() === String(pagamento?.metodo).toLowerCase()
+    );
+
+    if (!metodo) {
+        return res.status(400).json({ message: "Método de pagamento inválido." });
     }
 
-    if (!enderecoId) {
-        return res.status(400).json({ message: "Endereco é obrigatório" });
+    if (!["normal", "expressa"].includes(entrega)) {
+        return res.status(400).json({ message: "Tipo de entrega inválido." });
     }
 
-    if (!total) {
-        return res.status(400).json({ message: "Total é obrigatório" });
+    if (!Number.isInteger(Number(enderecoId))) {
+        return res.status(400).json({ message: "Endereço é obrigatório." });
     }
 
-    try {
-        const pedidoCriado = await Pedido.criarPedidoUsuario(userId, enderecoId, total)
-        const pagamentoCriado = await Pagamento.criarPagamento({
-            PedidoId: pedidoCriado.Id,
-            Metodo: pagamento.metodo,
-            Valor: pagamento.valor
-        })
-        const pedidoEnderecoCriado = await PedidoEndereco.criarPedidoEndereco({
-            PedidoId: pedidoCriado.Id,
-        })
+    if (!Array.isArray(itens) || itens.length === 0) {
+        return res.status(400).json({ message: "O pedido precisa ter itens." });
+    }
 
-        for (const item of itens) {
-            const produto = await Produto.getProduto(item.produtoId);
+    // valida e junta itens repetidos do mesmo produto
+    const agrupados = new Map();
 
-            if (!produto) {
-                return res.status(404).json({
-                    message: "Produto não encontrado"
-                });
-            }
+    for (const item of itens) {
+        const produtoId = Number(item.produtoId);
+        const quantidade = Number(item.quantidade);
 
-            const pedidoItem = await PedidoItem.criarPedidoItem({
-                PedidoId: pedidoCriado.Id,
-                ProdutoId: produto.Id,
-                Quantidade: item.quantidade,
-                PrecoUnitario: produto.PrecoPromocional ? produto.PrecoPromocional : produto.Preco
-            });
+        if (!Number.isInteger(produtoId) || !Number.isInteger(quantidade) || quantidade < 1 || quantidade > 99) {
+            return res.status(400).json({ message: "Item inválido no pedido." });
         }
 
-
-        res.status(201).json({
-            message: "Pedido criado com sucesso",
-            pedidoId: pedidoCriado.Id
-        });
-    } catch (error) {
-        console.log(error)
-
-        res.status(500).json({
-            message: "Erro interno"
-        });
+        agrupados.set(produtoId, (agrupados.get(produtoId) || 0) + quantidade);
     }
 
+    const itensValidos = [...agrupados].map(([produtoId, quantidade]) => ({ produtoId, quantidade }));
+    const frete = entrega === "expressa" ? 19.9 : 0;
+
+    try {
+        const { pedidoId } = await Pedido.criarCompleto({
+            usuarioId,
+            enderecoId: Number(enderecoId),
+            itens: itensValidos,
+            metodo,
+            frete
+        });
+
+        res.status(201).json({ message: "Pedido criado com sucesso", pedidoId });
+    } catch (error) {
+        if (error.status) {
+            return res.status(error.status).json({ message: error.message });
+        }
+
+        console.log(error);
+        res.status(500).json({ message: "Erro interno" });
+    }
 }
 
 exports.getPedido = async (req, res) => {
@@ -82,7 +77,14 @@ exports.getPedido = async (req, res) => {
 
         const detalhePedido = await Pedido.getPedido(id);
 
-        res.status(201).json({
+        if (
+            !detalhePedido ||
+            (req.user.role !== "admin" && detalhePedido.usuario.id !== req.user.id)
+        ) {
+            return res.status(404).json({ message: "Pedido não encontrado." });
+        }
+
+        res.status(200).json({
             message: "Pedido encontrado com sucesso",
             pedidoDetalhe: detalhePedido
         });
@@ -97,23 +99,15 @@ exports.getPedido = async (req, res) => {
 }
 
 exports.getPedidos = async (req, res) => {
-    const token = req.cookies.token;
-
-    if (!token) return res.status(401).json({ message: 'Não autenticado' });
-
     try {
-        const decoded = jwt.decode(token, SECRET_KEY);
-        const userId = decoded.id;
+        const userId = req.user.id;
 
         const pedidos = await Pedido.getPedidos(userId);
 
-        res.status(201).json({message: "Pedidos Encontrados com sucesso", pedidos})
+        res.status(201).json({ message: "Pedidos Encontrados com sucesso", pedidos })
     } catch (Error) {
-        console.log(error)
-
-        res.status(500).json({
-            message: "Erro interno"
-        });
+        console.log(error);
+        res.status(500).json({ message: "Erro interno" });
     }
 }
 
@@ -122,7 +116,7 @@ exports.getPedidosStats = async (req, res) => {
     try {
         const stats = await Pedido.getPedidosStats();
 
-        res.status(201).json({message: "Estatísticas de pedidos encontradas com sucesso", stats})
+        res.status(201).json({ message: "Estatísticas de pedidos encontradas com sucesso", stats })
     } catch (error) {
         console.log(error)
 
@@ -136,7 +130,7 @@ exports.getPedidosInfo = async (req, res) => {
     try {
         const info = await Pedido.getPedidosInfo();
 
-        res.status(201).json({message: "Informações de pedidos encontradas com sucesso", info})
+        res.status(201).json({ message: "Informações de pedidos encontradas com sucesso", info })
     } catch (error) {
         console.log(error)
 

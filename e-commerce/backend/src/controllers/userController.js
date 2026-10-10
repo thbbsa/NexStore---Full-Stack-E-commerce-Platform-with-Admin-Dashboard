@@ -3,12 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
-const SECRET_KEY = "48d321f254bb19fe1ffe7cba980b77fcba0f582bbcd1082415723d17ba35d6165198af9f7de15769a018f2c0276d5f8200dc1147ba9aebfed0599c24dcf2e5d2"
+const SECRET_KEY = process.env.JWT_SECRET;
 
 
-exports.register = async (req, res) => {
-    const infoUser = req.body;
+async function cadastrarUsuario(req, res, adminCriando) {
+    const infoUser = { ...req.body };
 
+    if (!adminCriando || !["user", "admin"].includes(infoUser.role)) {
+        infoUser.role = "user";
+    }
 
     try {
         const existingUser = await User.findByUsername(infoUser.username);
@@ -40,6 +43,9 @@ exports.register = async (req, res) => {
     }
 }
 
+exports.register = (req, res) => cadastrarUsuario(req, res, false);
+exports.criarUsuario = (req, res) => cadastrarUsuario(req, res, true);
+
 exports.login = async (req, res) => {
     const { email, senha, rememberMe } = req.body;
 
@@ -51,10 +57,12 @@ exports.login = async (req, res) => {
         if (!correctPassword) return res.status(400).json({ message: "Senha incorreta." });
 
         const token = jwt.sign(
-            { id: user.Id, username: user.Username, email: user.Email },
+            { id: user.Id, username: user.Username, email: user.Email, role: user.Role },
             SECRET_KEY,
             { expiresIn: rememberMe ? "7d" : "1h" }
         );
+
+        if (!user.Ativo) return res.status(403).json({ message: "Conta desativada." });
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -72,17 +80,8 @@ exports.login = async (req, res) => {
 
 
 exports.getMe = async (req, res) => {
-    const token = req.cookies.token
-
-    if (!token) {
-        return res.status(401).json({ message: 'Não autenticado' });
-    }
-
     try {
-        const decoded = jwt.decode(token, SECRET_KEY);
-        const userId = decoded.id;
-
-        const user = await User.findById(userId)
+        const user = await User.findById(req.user.id)
 
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
@@ -90,7 +89,8 @@ exports.getMe = async (req, res) => {
 
         res.status(200).json({ message: "Usuario Encontrado!", user })
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ message: "Erro ao buscar usuário." });
     }
 }
 
@@ -109,7 +109,17 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     const { id } = req.params;
-    const updates = req.body;
+    const updates = { ...req.body };
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAdmin && String(req.user.id) !== String(id)) {
+        return res.status(403).json({ message: "Acesso negado." });
+    }
+
+    if (!isAdmin) {
+        delete updates.role;
+        delete updates.ativo;
+    }
 
     try {
 
@@ -156,15 +166,8 @@ exports.logout = (req, res) => {
 };
 
 exports.createEndereco = async (req, res) => {
-    const token = req.cookies.token
-
-    if (!token) {
-        return res.status(401).json({ message: 'Não autenticado' });
-    }
-
     try {
-        const decoded = jwt.decode(token, SECRET_KEY);
-        const userIdAlvo = req.params.id || decoded.id;
+        const userIdAlvo = (req.user.role === "admin" && req.params.id) ? req.params.id : req.user.id;
 
         const { logradouro, numero, complemento, bairro, localidade, estado, cep } = req.body;
 
@@ -174,9 +177,9 @@ exports.createEndereco = async (req, res) => {
         if (endereco.length >= 5) {
             return res.status(400).json({ message: "Limite de endereços atingido. Exclua um endereço para adicionar outro." });
         }
-        
+
         await User.createEndereco(userIdAlvo, logradouro, numero, complemento, bairro, localidade, estado, cep);
-        
+
         res.status(200).json({ message: "Endereço criado com sucesso!" });
     } catch (error) {
         console.log("Erro ao criar endereço:", error);
@@ -186,13 +189,8 @@ exports.createEndereco = async (req, res) => {
 
 // No seu arquivo de rotas/controllers
 exports.getEndereco = async (req, res) => {
-    const token = req.cookies.token;
-
-    if (!token) return res.status(401).json({ message: 'Não autenticado' });
-
     try {
-        const decoded = jwt.decode(token, SECRET_KEY);
-        const userId = decoded.id;
+        const userId = req.user.id;
 
         const endereco = await User.getEndereco(userId);
 
@@ -221,17 +219,19 @@ exports.getEnderecosByUserId = async (req, res) => {
 exports.updateEndereco = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
-    const { Principal} = updates;
+    const { Principal } = updates;
+
+    if (req.user.role !== "admin" && !(await User.enderecoPertenceAoUsuario(id, req.user.id))) {
+        return res.status(404).json({ message: "Endereço não encontrado." });
+    }
 
     try {
-
-
         if (Principal !== undefined) {
             const endereco = await User.becomePrincipal(id);
 
-            res.status(200).json({ message: "Endereço setado como principal", endereco });
+            return res.status(200).json({ message: "Endereço setado como principal", endereco });
         }
-        
+
         const endereco = await User.updateEndereco(id, updates);
 
         if (!endereco) {
@@ -239,7 +239,7 @@ exports.updateEndereco = async (req, res) => {
         }
 
         res.status(200).json({ message: "Endereço atualizado com sucesso!" });
-        
+
     } catch (error) {
         console.log("Erro ao atualizar endereço:", error);
         res.status(500).json({ message: "Erro ao atualizar endereço." });
@@ -267,7 +267,12 @@ exports.excluirUsuario = async (req, res) => {
 };
 
 exports.deletarEndereco = async (req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params;
+
+    if (req.user.role !== "admin" && !(await User.enderecoPertenceAoUsuario(id, req.user.id))) {
+        return res.status(404).json({ message: "Endereço não encontrado." });
+    }
+
     try {
         const result = await User.deletarEndereco(id);
 

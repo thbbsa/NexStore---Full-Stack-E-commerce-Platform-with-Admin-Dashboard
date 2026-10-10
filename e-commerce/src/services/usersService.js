@@ -3,6 +3,7 @@ const API_URL = "http://localhost:3000/api";
 export async function getUsuarios() {
     const response = await fetch(`${API_URL}/usuarios`, {
     method: "GET",
+    credentials: "include"  
   });
 
   const data = await response.json();

@@ -1,3 +1,9 @@
+require("dotenv").config();
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET não definido no .env");
+}
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -12,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // ===================
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 

@@ -19,7 +19,7 @@ export async function getMe() {
 
 export async function getUserById(id) {
   const response = await fetch(`${API_URL}/user/${id}`, {
-    mothod: "GET",
+    method: "GET",
     credentials: "include",
   })
 
@@ -38,6 +38,7 @@ export async function storeUser(user) {
     return await fetch(`${API_URL}/perfil/${user.Id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(user)
     });
   } else {
@@ -47,6 +48,15 @@ export async function storeUser(user) {
       body: JSON.stringify(user)
     });
   }
+}
+
+export async function criarUsuarioAdmin(user) {
+  return await fetch(`${API_URL}/usuarios`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(user)
+  });
 }
 
 export async function excluirUsuario(id) {

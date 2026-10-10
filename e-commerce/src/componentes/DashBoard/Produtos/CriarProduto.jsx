@@ -91,6 +91,7 @@ const CriarProduto = () => {
         try {
             const response = await fetch("http://localhost:3000/api/produtos", {
                 method: "POST",
+                credentials: "include",
                 body: formData
             });
 

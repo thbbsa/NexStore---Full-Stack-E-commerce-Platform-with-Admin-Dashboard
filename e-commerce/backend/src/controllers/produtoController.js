@@ -94,7 +94,7 @@ exports.atualizarProduto = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ erro: "Erro ao atualizar produto", error });
+    res.status(500).json({ erro: "Erro ao atualizar produto" });;
   }
 };
 

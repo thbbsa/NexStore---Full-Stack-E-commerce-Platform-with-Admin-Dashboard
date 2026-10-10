@@ -110,35 +110,52 @@ class Produto {
     static async atualizar(id, produto) {
         const pool = await conectar();
 
+        // chave que o front manda -> coluna real + tipo
+        const permitidos = {
+            nome: { coluna: "Nome", tipo: sql.NVarChar(150) },
+            marca: { coluna: "Marca", tipo: sql.NVarChar(100) },
+            categoriaId: { coluna: "CategoriaId", tipo: sql.Int },
+            preco: { coluna: "Preco", tipo: sql.Decimal(10, 2) },
+            precoPromocional: { coluna: "PrecoPromocional", tipo: sql.Decimal(10, 2) },
+            estoque: { coluna: "Estoque", tipo: sql.Int },
+            sku: { coluna: "SKU", tipo: sql.NVarChar(50) },
+            descricaoCurta: { coluna: "DescricaoCurta", tipo: sql.NVarChar(300) },
+            descricaoCompleta: { coluna: "DescricaoCompleta", tipo: sql.NVarChar(sql.MAX) },
+            ativo: { coluna: "Ativo", tipo: sql.Bit },
+        };
+
         const campos = [];
         const request = pool.request().input("Id", sql.Int, id);
 
         for (const [campo, valor] of Object.entries(produto)) {
-            if (valor !== undefined) {
-                campos.push(`${campo} = @${campo}`);
-                request.input(campo, valor);
-            }
+            const permitido = permitidos[campo];
+            if (!permitido || valor === undefined) continue;
+
+            // o front manda "" quando não há promoção
+            const valorFinal = (campo === "precoPromocional" && valor === "") ? null : valor;
+
+            campos.push(`${permitido.coluna} = @${campo}`);
+            request.input(campo, permitido.tipo, valorFinal);
         }
 
         if (campos.length === 0) {
             throw new Error("Nenhum campo válido para atualizar");
         }
 
-        const query = `
-    UPDATE Produtos
-    SET ${campos.join(", ")}
-    WHERE Id = @Id
-  `;
+        await request.query(`
+        UPDATE Produtos
+        SET ${campos.join(", ")}
+        WHERE Id = @Id
+    `);
 
-        await request.query(query);
         return this.getProduto(id);
     }
 
     static async buscarPorQuery(query, categoryId) {
-    try {
-        const pool = await conectar();
+        try {
+            const pool = await conectar();
 
-        let sqlQuery = `
+            let sqlQuery = `
             SELECT
                 P.Id,
                 P.Nome,
@@ -153,32 +170,32 @@ class Produto {
             WHERE P.Ativo = 1
         `;
 
-        if (query) {
-            sqlQuery += ` AND P.Nome LIKE @Query`;
+            if (query) {
+                sqlQuery += ` AND P.Nome LIKE @Query`;
+            }
+
+            if (categoryId) {
+                sqlQuery += ` AND P.CategoriaId = @Categoria`;
+            }
+
+            const request = pool.request();
+
+            if (query) {
+                request.input("Query", sql.NVarChar(255), `%${query}%`);
+            }
+
+            if (categoryId) {
+                request.input("Categoria", sql.Int, categoryId);
+            }
+
+            const result = await request.query(sqlQuery);
+
+            return result.recordset;
+        } catch (error) {
+            console.error("Erro ao buscar produtos:", error);
+            throw error;
         }
-
-        if (categoryId) {
-            sqlQuery += ` AND P.CategoriaId = @Categoria`;
-        }
-        
-        const request = pool.request();
-
-        if (query) {
-            request.input("Query", sql.NVarChar(255), `%${query}%`);
-        }
-
-        if (categoryId) {
-            request.input("Categoria", sql.Int, categoryId);
-        }
-
-        const result = await request.query(sqlQuery);
-
-        return result.recordset;
-    } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-        throw error;
     }
-}
 
 }
 
