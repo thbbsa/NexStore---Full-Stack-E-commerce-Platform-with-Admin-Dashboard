@@ -5,7 +5,7 @@ import { storeUser, getUserById, getEnderecosByUserId, storeEndereco, UpdateEnde
 import styles from "./css/EditarUsuario.module.css";
 import { formatarTelefone } from "../../../utils/formatters.js"
 
-import ModalEndereco from "../../ModalEndereco/ModalEndereco ";
+import ModalEndereco from "../../ModalEndereco/ModalEndereco";
 import ModalConfirmacaoExclusao from "../../ModalConfirmacaoExclusao/ModalConfirmacaoExclusao";
 
 

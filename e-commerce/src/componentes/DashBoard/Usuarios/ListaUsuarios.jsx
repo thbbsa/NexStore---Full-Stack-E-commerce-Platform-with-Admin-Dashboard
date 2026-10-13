@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUsuarios } from "../../../services/usersService";
+import { getUsuarios } from "../../../services/userService";
 
 // Importando o CSS Module ao invés do CSS Global
 import styles from "./css/ListaUsuario.module.css";

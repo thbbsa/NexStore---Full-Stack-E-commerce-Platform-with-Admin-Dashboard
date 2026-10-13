@@ -51,10 +51,10 @@ exports.login = async (req, res) => {
 
     try {
         const user = await User.findByEmail(email);
-        if (!user) return res.status(400).json({ message: "Email não encontrado." });
+        if (!user) return res.status(400).json({ message: "Email ou senha incorretos." });
 
         const correctPassword = await bcrypt.compare(senha, user.Senha);
-        if (!correctPassword) return res.status(400).json({ message: "Senha incorreta." });
+        if (!correctPassword) return res.status(400).json({ message: "Email ou senha incorretos." });
 
         const token = jwt.sign(
             { id: user.Id, username: user.Username, email: user.Email, role: user.Role },
@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000, // 7 days or 1h
         });
 
-        return res.status(200).json({ message: "Login realizado com sucesso!", user: { username: user.username, email: user.email } });
+        return res.status(200).json({ message: "Login realizado com sucesso!", user: { username: user.Username, email: user.Email, role: user.Role } });
     } catch (error) {
         console.error("Erro ao fazer login:", error);
         res.status(500).json({ message: "Erro ao fazer login." });
@@ -125,21 +125,21 @@ exports.updateUser = async (req, res) => {
 
         if (updates.Username) {
             const existingUser = await User.findByUsername(updates.Username);
-            if (existingUser && existingUser.id != id) {
+            if (existingUser && existingUser.Id != id) {
                 return res.status(400).json({ message: "Username já existe." });
             }
         }
 
         if (updates.Email) {
             const existingEmail = await User.findByEmail(updates.Email);
-            if (existingEmail && existingEmail.id != id) {
+            if (existingEmail && existingEmail.Id != id) {
                 return res.status(400).json({ message: "Email já registrado." });
             }
         }
 
         if (updates.Telefone) {
             const existingTelefone = await User.findByTelefone(updates.Telefone);
-            if (existingTelefone && existingTelefone.id != id) {
+            if (existingTelefone && existingTelefone.Id != id) {
                 return res.status(400).json({ message: "Telefone já registrado." });
             }
         }
@@ -151,7 +151,8 @@ exports.updateUser = async (req, res) => {
         }
         res.status(200).json({ message: "Usuário atualizado com sucesso!", user });
     } catch (error) {
-        res.status(500).json({ message: "Erro ao atualizar usuário.", error });
+        console.log(error)
+        res.status(500).json({ message: "Erro ao atualizar usuário." });
     }
 }
 
@@ -291,3 +292,14 @@ exports.deletarEndereco = async (req, res) => {
         res.status(500).json({ message: "Erro ao excluir endereço." });
     }
 };
+
+exports.getUsuarios = async (req, res) => {
+    try {
+        const usuarios = await User.getUsuarios();
+
+        res.status(200).json(usuarios);
+    } catch (error) {
+        console.error("Erro ao buscar usuários:", error);
+        res.status(500).json({ message: "Erro ao buscar usuários" });
+    }
+}

@@ -16,6 +16,7 @@ const {
   getEnderecosByUserId,
   updateEndereco,
   deletarEndereco,
+  getUsuarios
 } = require("../controllers/userController");
 
 const {
@@ -28,8 +29,6 @@ const {
 } = require("../controllers/produtoController");
 
 const { criarPedido, getPedido, getPedidos, getPedidosStats, getPedidosInfo } = require("../controllers/PedidoController");
-
-const { getUsuarios } = require("../controllers/usersController");
 
 const upload = require("../middleware/upload");
 
