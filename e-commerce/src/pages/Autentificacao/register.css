@@ -66,6 +66,10 @@
    CARD
 ========================================================= */
 .register-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);

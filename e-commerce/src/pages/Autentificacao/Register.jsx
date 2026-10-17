@@ -1,180 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { storeUser } from "../../services/userService.js";
 import "./register.css";
+
+import { formatarCpf, formatarTelefone } from "../../utils/formatters.js";
+
+import useRegister from "./hook/useRegisterValidation.js";
 
 export default function Register() {
     const navigate = useNavigate();
 
-    const [error, setError] = useState("");
     const [cpfFormatado, setCpfFormatado] = useState("");
     const [telefoneFormatado, setTelefoneFormatado] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [isDisabled, setIsDisabled] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
 
-    const clearError = () => setError("");
+    const {
+        error,
+        setError,
+        isLoading,
+        isDisabled,
+        handleSubmit
+    } = useRegister();
 
-    const getPasswordStrength = (password) => {
-        let score = 0;
-        if (password.length >= 8) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
-        return score;
-    };
-
-    const checkName = (name) => {
-        if (!name || name.length < 3) {
-            setError("Nome inválido. Deve conter no mínimo 3 caracteres.");
-            return false;
-        }
-        if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(name)) {
-            setError("Nome deve conter apenas letras e espaços.");
-            return false;
-        }
-        clearError();
-        return true;
-    };
-
-    const checkUsername = (username) => {
-        if (!username || username.length < 3) {
-            setError("Username inválido. Mínimo 3 caracteres.");
-            return false;
-        }
-        if (!/^\w+$/.test(username)) {
-            setError("Username deve conter apenas letras, números e underscores.");
-            return false;
-        }
-        clearError();
-        return true;
-    };
-
-    const checkEmail = (email) => {
-        if (!email) { setError("O campo de e-mail não pode estar vazio."); return false; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError("Digite um e-mail válido (ex: exemplo@dominio.com).");
-            return false;
-        }
-        clearError();
-        return true;
-    };
-
-    const formatarCpf = (value) => {
-        value = value.replace(/\D/g, '')
-        value = value.slice(0, 11)
-
-        value = value.replace(/(\d{3})(\d)/, '$1.$2')
-        value = value.replace(/(\d{3})(\d)/, '$1.$2')
-        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-
-        return value
-    }
-
-
-    const checkCPF = (cpf) => {
-        const cpfLimpo = cpf.replace(/\D/g, '')
-
-        if (!cpf) { setError("O campo de CPF não pode estar vazio."); return false; }
-        if (cpfLimpo.length < 11) { setError("Cpf inválido. Coloque um cpf válido"); return false; }
-
-        clearError();
-        return true;
-    }
-
-    const formatarTelefone = (value) => {
-        value = value.replace(/\D/g, '')
-        value = value.slice(0, 11)
-
-        if (value.length <= 10) {
-            // telefone fixo
-            value = value.replace(/(\d{2})(\d)/, '($1) $2')
-            value = value.replace(/(\d{4})(\d)/, '$1-$2')
-        } else {
-            // celular
-            value = value.replace(/(\d{2})(\d)/, '($1) $2')
-            value = value.replace(/(\d{5})(\d)/, '$1-$2')
-        }
-
-        return value
-    }
-
-    const checkTelefone = (telefone) => {
-        if (!telefone) { setError("O campo de Telefone não pode estar vazio."); return false; }
-        if (telefone.length < 11) { setError("Telefone inválido."); return false; }
-
-        clearError();
-        return true;
-    }
-
-    const checkPassword = (password) => {
-        if (!password) { setError("O campo de senha não pode estar vazio."); return false; }
-        if (password.length < 8) { setError("A senha deve ter no mínimo 8 caracteres."); return false; }
-        if (!/[A-Z]/.test(password)) { setError("A senha deve conter pelo menos uma letra maiúscula."); return false; }
-        if (!/[0-9]/.test(password)) { setError("A senha deve conter pelo menos um número."); return false; }
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-            setError("A senha deve conter pelo menos um caractere especial (ex: @, #, !).");
-            return false;
-        }
-        clearError();
-        return true;
-    };
-
-    const checkPasswordMatch = (password, confirmPassword) => {
-        if (password !== confirmPassword) { setError("As senhas não coincidem."); return false; }
-        clearError();
-        return true;
-    };
-
-    const validateForm = (value) => {
-        if (!checkName(value.nome)) return false;
-        if (!checkUsername(value.username)) return false;
-        if (!checkCPF(value.cpf)) return false;
-        if (!checkEmail(value.email)) return false;
-        if (!checkTelefone(value.telefone)) return false;
-        if (!checkPassword(value.senha)) return false;
-        if (!checkPasswordMatch(value.senha, value.confirmPassword)) return false;
-        return true;
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const data = new FormData(event.target);
-        const value = Object.fromEntries(data.entries());
-
-        // LIMPAR MÁSCARAS
-        value.cpf = value.cpf.replace(/\D/g, '')
-        value.telefone = value.telefone.replace(/\D/g, '')
-
-        if (!validateForm(value)) return;
-
-        setIsLoading(true);
-        setIsDisabled(true);
-        setError("");
-
-        try {
-            const response = await storeUser(value);
-            const result = await response.json();
-
-            if (response.ok) {
-                setTimeout(() => navigate("/login"), 3000);
-            } else {
-                setError(result.message || "Erro ao registrar usuário.");
-                setIsLoading(false);
-                setIsDisabled(false);
-            }
-        } catch (err) {
-            console.error("Erro de rede:", err);
-            setError("Erro de conexão com o servidor.");
-            setIsLoading(false);
-            setIsDisabled(false);
-        }
-    };
-
-    const strengthLabel = ["", "Fraca", "Média", "Boa", "Forte"];
     const strengthClass = ["", "active-weak", "active-medium", "active-strong", "active-strong"];
 
     return (

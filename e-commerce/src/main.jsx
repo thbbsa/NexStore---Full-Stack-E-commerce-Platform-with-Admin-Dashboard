@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Páginas Principais e Públicas
 import Home from './pages/Home/Home.jsx';
-import Login from './pages/Autentificação/Login.jsx';
-import Register from './pages/Autentificação/Registes.jsx';
+import Login from './pages/Autentificacao/Login.jsx';
+import Register from './pages/Autentificacao/Register.jsx';
 import ProductDetails from './pages/ProductDetails/ProductDetails.jsx';
 import BuscarProduto from './pages/BuscarProduto/BuscarProduto.jsx';
 import Carrinho from './pages/Carrinho/Carrinho.jsx';
