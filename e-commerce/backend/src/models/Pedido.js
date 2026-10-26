@@ -328,6 +328,89 @@ class Pedido {
         return resultado.recordset;
     }
 
+    static async avancarStatus(pedidoId) {
+        const pool = await conectar();
+        const transaction = new sql.Transaction(pool);
+        await transaction.begin();
+
+        try {
+            // 1. lê o estado atual (a linha do pedido fica travada até o commit)
+            const resultado = await new sql.Request(transaction)
+                .input("PedidoId", sql.Int, pedidoId)
+                .query(`
+                SELECT
+                    p.Status  AS PedidoStatus,
+                    pg.Status AS PagamentoStatus,
+                    e.Status  AS EntregaStatus
+                FROM Pedidos p WITH (UPDLOCK, ROWLOCK)
+                INNER JOIN Pagamentos pg ON pg.PedidoId = p.Id
+                INNER JOIN Entregas e ON e.PedidoId = p.Id
+                WHERE p.Id = @PedidoId
+            `);
+
+            if (resultado.recordset.length === 0) {
+                throw erroPedido("Pedido não encontrado.", 404);
+            }
+
+            const { PedidoStatus, PagamentoStatus, EntregaStatus } = resultado.recordset[0];
+
+            // atalho para criar uma request dentro da transação já com o id
+            const req = () => new sql.Request(transaction).input("PedidoId", sql.Int, pedidoId);
+
+            let novoStatus;
+
+            // 2. decide o próximo passo (a ordem importa)
+            if (PedidoStatus === "Cancelado") {
+                throw erroPedido("O pedido foi cancelado.", 400);
+
+            } else if (PagamentoStatus === "Pendente") {
+                await req().query(`
+                UPDATE Pagamentos
+                SET Status = 'Aprovado', DataPagamento = GETDATE()
+                WHERE PedidoId = @PedidoId
+            `);
+                await req().query(`UPDATE Pedidos SET Status = 'Pago' WHERE Id = @PedidoId`);
+                novoStatus = "Pago";
+
+            } else if (PagamentoStatus !== "Aprovado") {
+                throw erroPedido("O pagamento deste pedido não foi aprovado.", 400);
+
+            } else if (EntregaStatus === "Preparando") {
+                await req().query(`
+                UPDATE Entregas
+                SET Status = 'Enviado', DataEnvio = GETDATE()
+                WHERE PedidoId = @PedidoId
+            `);
+                await req().query(`UPDATE Pedidos SET Status = 'Enviado' WHERE Id = @PedidoId`);
+                novoStatus = "Enviado";
+
+            } else if (EntregaStatus === "Enviado") {
+                await req().query(`
+                UPDATE Entregas SET Status = 'EmTransito' WHERE PedidoId = @PedidoId
+            `);
+                novoStatus = "Em trânsito";
+
+            } else if (EntregaStatus === "EmTransito") {
+                await req().query(`
+                UPDATE Entregas
+                SET Status = 'Entregue', DataEntrega = GETDATE()
+                WHERE PedidoId = @PedidoId
+            `);
+                await req().query(`UPDATE Pedidos SET Status = 'Entregue' WHERE Id = @PedidoId`);
+                novoStatus = "Entregue";
+
+            } else {
+                throw erroPedido("Pedido já finalizado.", 400);
+            }
+
+            await transaction.commit();
+            return { pedidoId, novoStatus };
+
+        } catch (error) {
+            try { await transaction.rollback(); } catch (_) { /* já abortada */ }
+            throw error;
+        }
+    }
 }
 
 

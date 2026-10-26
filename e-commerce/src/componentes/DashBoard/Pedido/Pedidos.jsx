@@ -1,19 +1,18 @@
 import { React, useState, useEffect } from "react";
 import styles from "./css/Pedidos.module.css";
-import { getPedidosStats, getPedidosInfo } from "../../../services/pedidoService";
+import { getPedidosStats, getPedidosInfo, avancarStatusPedido } from "../../../services/pedidoService";
 import ModalDetalhesPedido from "../../modalDetalhesPedido/modalDetalhesPedido";
 
 const statusMap = {
-    pendente: { label: "Pendente", className: styles.badgePendente },
     preparando: { label: "Preparando", className: styles.badgePendente },
-    confirmado: { label: "Confirmado", className: styles.badgeConfirmado },
     enviado: { label: "Enviado", className: styles.badgeEnviado },
-    transito: { label: "Em trânsito", className: styles.badgeTransito },
+    emtransito: { label: "Em trânsito", className: styles.badgeTransito },
     entregue: { label: "Entregue", className: styles.badgeEntregue },
+    devolvido: { label: "Devolvido", className: styles.badgePendente },
 };
 
 const pagamentoMap = {
-    pago: { label: "Pago", className: styles.badgePago },
+    aprovado: { label: "Pago", className: styles.badgePago },
     pendente: { label: "Aguardando pagamento", className: styles.badgePendente },
 };
 
@@ -59,56 +58,69 @@ const Pedido = () => {
     // guarda o id do pedido clicado, não apenas um boolean — é o que o modal precisa pra buscar os detalhes
     const [pedidoSelecionadoId, setPedidoSelecionadoId] = useState(null);
 
+    const loadStats = async () => {
+        setStatsErro(null);
+
+        try {
+            const response = await getPedidosStats();
+            setStats(response.stats);
+        } catch (error) {
+            setStatsErro("Erro ao carregar estatísticas de pedidos.");
+        } finally {
+            setStatsCarregando(false);
+        }
+    };
+
+    const loadPedidosInfo = async () => {
+        setPedidosErro(null);
+
+        try {
+            const pedidosInfo = await getPedidosInfo();
+
+            const pedidosFormatados = pedidosInfo.info.map((p) => ({
+                id: p.PedidoId,
+                nome: p.UsuarioNome,
+                email: p.UsuarioEmail,
+                dataRaw: new Date(p.DataPedido),
+                data: new Date(p.DataPedido).toLocaleString("pt-BR"),
+                total: p.Total.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                }),
+                pagamento: normalizarStatus(p.StatusPagamento),
+                status: normalizarStatus(p.StatusEntrega),
+            }));
+
+            setPedidosInfo(pedidosFormatados);
+        } catch (error) {
+            setPedidosErro("Erro ao carregar informações de pedidos.");
+        } finally {
+            setPedidosCarregando(false);
+        }
+    };
+
     useEffect(() => {
-        const loadStats = async () => {
-            setStatsCarregando(true);
-            setStatsErro(null);
-
-            try {
-                const response = await getPedidosStats();
-                setStats(response.stats);
-            } catch (error) {
-                setStatsErro("Erro ao carregar estatísticas de pedidos.");
-            } finally {
-                setStatsCarregando(false);
-            }
-        };
-
         loadStats();
-    }, []);
-
-    useEffect(() => {
-        const loadPedidosInfo = async () => {
-            setPedidosCarregando(true);
-            setPedidosErro(null);
-
-            try {
-                const pedidosInfo = await getPedidosInfo();
-
-                const pedidosFormatados = pedidosInfo.info.map((p) => ({
-                    id: p.PedidoId,
-                    nome: p.UsuarioNome,
-                    email: p.UsuarioEmail,
-                    dataRaw: new Date(p.DataPedido),
-                    data: new Date(p.DataPedido).toLocaleString("pt-BR"),
-                    total: p.Total.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                    }),
-                    pagamento: normalizarStatus(p.StatusPagamento),
-                    status: normalizarStatus(p.StatusEntrega),
-                }));
-
-                setPedidosInfo(pedidosFormatados);
-            } catch (error) {
-                setPedidosErro("Erro ao carregar informações de pedidos.");
-            } finally {
-                setPedidosCarregando(false);
-            }
-        };
-
         loadPedidosInfo();
     }, []);
+
+    const [versaoModal, setVersaoModal] = useState(0);
+    const [avancando, setAvancando] = useState(false);
+
+    const handleAvancar = async () => {
+        if (avancando) return;
+        setAvancando(true);
+
+        try {
+            await avancarStatusPedido(pedidoSelecionadoId);
+            await Promise.all([loadPedidosInfo(), loadStats()]);
+            setVersaoModal((v) => v + 1);
+        } catch (error) {
+            alert(error.message || "Erro ao avançar o status do pedido.");
+        } finally {
+            setAvancando(false);
+        }
+    };
 
     const filteredPedidos = pedidosInfo?.filter((pedido) => {
         const pesquisaLower = pesquisa.toLowerCase();
@@ -166,8 +178,8 @@ const Pedido = () => {
                                     {statsCarregando
                                         ? "…"
                                         : statsErro
-                                        ? "—"
-                                        : `R$ ${stats?.TotalVendas?.toLocaleString("pt-BR") ?? "0,00"}`}
+                                            ? "—"
+                                            : `R$ ${stats?.TotalVendas?.toLocaleString("pt-BR") ?? "0,00"}`}
                                 </p>
                             </div>
                         </div>
@@ -264,7 +276,7 @@ const Pedido = () => {
             </div>
 
             <div className={`${styles.tableCard} p-4`}>
-                {pedidosCarregando  ? (
+                {pedidosCarregando ? (
                     <div className="text-center py-5 text-secondary">
                         <div
                             className="spinner-border spinner-border-sm me-2 text-primary"
@@ -272,7 +284,7 @@ const Pedido = () => {
                         ></div>
                         Carregando pedidos...
                     </div>
-                ) : pedidosErro  ? (
+                ) : pedidosErro ? (
                     <div className="text-center py-5 text-danger">{pedidosErro}</div>
                 ) : (
                     <div className="table-responsive">
@@ -359,8 +371,11 @@ const Pedido = () => {
 
             {pedidoSelecionadoId && (
                 <ModalDetalhesPedido
+                    key={versaoModal}
                     pedidoId={pedidoSelecionadoId}
                     onClose={() => setPedidoSelecionadoId(null)}
+                    onAvancar={handleAvancar}
+                    avancando={avancando}
                 />
             )}
         </div>

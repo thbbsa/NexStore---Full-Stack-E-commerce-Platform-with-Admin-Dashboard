@@ -11,7 +11,7 @@ const ModalDetalhesPedido = (props) => {
     const [error, setError] = useState(null);
 
     const formatarMoeda = (valor) =>
-    (valor ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        (valor ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
     useEffect(() => {
         const carregarPedido = async () => {
@@ -27,7 +27,7 @@ const ModalDetalhesPedido = (props) => {
 
         carregarPedido();
     }, [props.pedidoId])
-    
+
 
     return (
         <div className={styles.overlay} onClick={props.onClose}>
@@ -128,8 +128,17 @@ const ModalDetalhesPedido = (props) => {
                         <button type="button" className={styles.btnSecundario} onClick={props.onClose}>
                             Fechar
                         </button>
-                        <button type="button" className={styles.btnPrimario}>
-                            Avançar status →
+                        <button
+                            type="button"
+                            className={styles.btnPrimario}
+                            onClick={props.onAvancar}
+                            disabled={
+                                props.avancando ||
+                                pedido?.status === "Entregue" ||
+                                pedido?.status === "Cancelado"
+                            }
+                        >
+                            {props.avancando ? "Avançando..." : "Avançar status →"}
                         </button>
                     </div>
 

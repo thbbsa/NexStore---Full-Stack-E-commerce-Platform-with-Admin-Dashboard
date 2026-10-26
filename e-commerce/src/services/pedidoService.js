@@ -30,3 +30,18 @@ export async function getPedidosInfo() {
 
     return data;
 }
+
+export async function avancarStatusPedido(pedidoId) {
+    const response = await fetch(`${API_URL}/pedidos/${pedidoId}/avancar-status`, {
+        method: "PATCH",
+        credentials: "include"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw data;
+    }
+
+    return data;    
+}

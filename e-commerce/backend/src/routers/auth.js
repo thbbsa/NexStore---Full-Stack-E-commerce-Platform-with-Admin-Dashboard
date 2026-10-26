@@ -30,7 +30,11 @@ const {
 
 const { criarPedido, getPedido, getPedidos, getPedidosStats, getPedidosInfo } = require("../controllers/PedidoController");
 
+const { Pedido } = require("../models/Pedido");
+
 const upload = require("../middleware/upload");
+
+const { avancarStatusPedido } = require("../controllers/avancarStatusPedido");
 
 
 const router = express.Router();
@@ -70,6 +74,7 @@ router.get("/stats", authMiddleware, requireAdmin, getPedidosStats);
 router.post("/criar-pedido", authMiddleware, criarPedido);
 router.get("/pedidos/:id", authMiddleware, getPedido);
 router.get("/meus-pedidos", authMiddleware, getPedidos);
+router.patch("/pedidos/:pedidoId/avancar-status", authMiddleware, requireAdmin, avancarStatusPedido);
 
 
 module.exports = router;
