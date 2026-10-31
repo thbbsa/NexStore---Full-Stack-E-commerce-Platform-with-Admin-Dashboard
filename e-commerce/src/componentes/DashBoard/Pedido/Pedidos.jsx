@@ -2,19 +2,7 @@ import { React, useState, useEffect } from "react";
 import styles from "./css/Pedidos.module.css";
 import { getPedidosStats, getPedidosInfo, avancarStatusPedido } from "../../../services/pedidoService";
 import ModalDetalhesPedido from "../../modalDetalhesPedido/modalDetalhesPedido";
-
-const statusMap = {
-    preparando: { label: "Preparando", className: styles.badgePendente },
-    enviado: { label: "Enviado", className: styles.badgeEnviado },
-    emtransito: { label: "Em trânsito", className: styles.badgeTransito },
-    entregue: { label: "Entregue", className: styles.badgeEntregue },
-    devolvido: { label: "Devolvido", className: styles.badgePendente },
-};
-
-const pagamentoMap = {
-    aprovado: { label: "Pago", className: styles.badgePago },
-    pendente: { label: "Aguardando pagamento", className: styles.badgePendente },
-};
+import { statusMap, pagamentoMap, normalizarStatus } from "../../../utils/statusPedido";
 
 const getIniciais = (nome) =>
     nome
@@ -23,13 +11,6 @@ const getIniciais = (nome) =>
         .slice(0, 2)
         .join("")
         .toUpperCase() || "";
-
-// remove acentos e deixa minúsculo, ex: "Em Trânsito" -> "em transito"
-const normalizarStatus = (valor) =>
-    valor
-        ?.toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") || "";
 
 const isHoje = (data) => {
     const hoje = new Date();
@@ -140,6 +121,9 @@ const Pedido = () => {
         return pesquisaEncontrada && statusMatch && pagamentoMatch && dataMatch;
     });
 
+
+    const pedidoSelecionado = pedidosInfo?.find((p) => p.id === pedidoSelecionadoId);
+
     return (
         <div className={`${styles.pedidoContainer} p-4 d-flex flex-column gap-4 text-white`}>
             <div className={`${styles.headerCard} p-4`}>
@@ -242,11 +226,11 @@ const Pedido = () => {
                             onChange={(e) => setFiltroStatus(e.target.value)}
                         >
                             <option value="">Status: Todos</option>
-                            <option value="pendente">Pendente</option>
-                            <option value="confirmado">Confirmado</option>
+                            <option value="preparando">Preparando</option>
                             <option value="enviado">Enviado</option>
-                            <option value="transito">Em trânsito</option>
+                            <option value="emtransito">Em trânsito</option>
                             <option value="entregue">Entregue</option>
+                            <option value="devolvido">Devolvido</option>
                         </select>
                     </div>
 
@@ -256,7 +240,7 @@ const Pedido = () => {
                             onChange={(e) => setFiltroPagamento(e.target.value)}
                         >
                             <option value="">Pagamento: Todos</option>
-                            <option value="pago">Pago</option>
+                            <option value="aprovado">Pago</option>
                             <option value="pendente">Aguardando pagamento</option>
                         </select>
                     </div>
@@ -373,6 +357,7 @@ const Pedido = () => {
                 <ModalDetalhesPedido
                     key={versaoModal}
                     pedidoId={pedidoSelecionadoId}
+                    status={pedidoSelecionado?.status}
                     onClose={() => setPedidoSelecionadoId(null)}
                     onAvancar={handleAvancar}
                     avancando={avancando}

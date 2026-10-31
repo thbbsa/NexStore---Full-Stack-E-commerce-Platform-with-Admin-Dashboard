@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react'
 import styles from './css/modalDetalhesPedido.module.css'
 import { getPedido } from '../../services/userService'
+import { statusMap, pagamentoMap, normalizarStatus, badgeClass } from '../../utils/statusPedido'
 
 const ModalDetalhesPedido = (props) => {
 
@@ -28,6 +29,16 @@ const ModalDetalhesPedido = (props) => {
         carregarPedido();
     }, [props.pedidoId])
 
+
+    const pagamento = pagamentoMap[normalizarStatus(pedido?.pagamento?.status)] ?? {
+        label: pedido?.pagamento?.status || "—",
+        className: "",
+    };
+
+    const status = statusMap[normalizarStatus(props.status)] ?? {
+        label: props.status || "—",
+        className: "",
+    };
 
     return (
         <div className={styles.overlay} onClick={props.onClose}>
@@ -81,7 +92,7 @@ const ModalDetalhesPedido = (props) => {
                                     <p className={styles.modalSectionContent}><strong>Método:</strong> {pedido?.pagamento?.metodo}</p>
                                     <p className={styles.modalSectionContent}>
                                         <strong>Status:</strong>{' '}
-                                        <span className={styles.badgeSuccess}>● Pago</span>
+                                        <span className={`${badgeClass} ${pagamento.className}`}>{pagamento.label}</span>
                                     </p>
                                 </div>
                             </div>
@@ -116,7 +127,7 @@ const ModalDetalhesPedido = (props) => {
                             <div className="col-12">
                                 <div className={styles.modalSection}>
                                     <h3 className={styles.modalSectionTitle}>Status do Pedido</h3>
-                                    <span className={styles.badgeWarning}>● {pedido?.status}</span>
+                                    <span className={`${badgeClass} ${status.className}`}>{status.label}</span>
                                 </div>
                             </div>
 
@@ -132,11 +143,7 @@ const ModalDetalhesPedido = (props) => {
                             type="button"
                             className={styles.btnPrimario}
                             onClick={props.onAvancar}
-                            disabled={
-                                props.avancando ||
-                                pedido?.status === "Entregue" ||
-                                pedido?.status === "Cancelado"
-                            }
+                            disabled={props.avancando || props.status === "entregue" || props.status === "devolvido"}
                         >
                             {props.avancando ? "Avançando..." : "Avançar status →"}
                         </button>
