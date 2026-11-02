@@ -27,7 +27,7 @@ import EditarProduto from './componentes/DashBoard/Produtos/EditarProduto.jsx';
 import ListaUsuarios from './componentes/DashBoard/Usuarios/ListaUsuarios.jsx';
 import EditarUsuario from './componentes/DashBoard/Usuarios/EditarUsuario.jsx';
 import AdicionarUsuario from './componentes/DashBoard/Usuarios/AdicionarUsuario.jsx';
-import Pedido from './componentes/DashBoard/Pedido/Pedidos.jsx';
+import Pedido from './componentes/DashBoard/Pedidos/Pedidos.jsx';
 
 // Contextos e Autenticação
 import { CarrinhoProvider } from "./context/Carrinho/CarrinhoProvider.jsx";

@@ -1,4 +1,4 @@
-import styles from "../componentes/DashBoard/Pedido/css/Pedidos.module.css";
+import styles from "../componentes/DashBoard/Pedidos/css/Pedidos.module.css";
 
 export const badgeClass = styles.badge;
 

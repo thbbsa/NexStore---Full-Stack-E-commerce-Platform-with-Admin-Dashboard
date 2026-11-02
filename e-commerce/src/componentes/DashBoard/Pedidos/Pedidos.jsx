@@ -4,6 +4,18 @@ import { getPedidosStats, getPedidosInfo, avancarStatusPedido } from "../../../s
 import ModalDetalhesPedido from "../../modalDetalhesPedido/modalDetalhesPedido";
 import { statusMap, pagamentoMap, normalizarStatus } from "../../../utils/statusPedido";
 
+const MSIcon = ({ name, size = 17, fill = 0, wght = 400 }) => (
+    <span
+        className="ms"
+        style={{
+            fontSize: size,
+            fontVariationSettings: `'FILL' ${fill}, 'wght' ${wght}, 'GRAD' 0, 'opsz' 20`,
+        }}
+    >
+        {name}
+    </span>
+);
+
 const getIniciais = (nome) =>
     nome
         ?.split(" ")
@@ -35,6 +47,9 @@ const Pedido = () => {
     const [filtroStatus, setFiltroStatus] = useState("");
     const [filtroPagamento, setFiltroPagamento] = useState("");
     const [filtroData, setFiltroData] = useState("");
+
+    const [messageSuccess, setMessageSuccess] = useState("");
+    const [showMessage, setShowMessage] = useState(false);
 
     // guarda o id do pedido clicado, não apenas um boolean — é o que o modal precisa pra buscar os detalhes
     const [pedidoSelecionadoId, setPedidoSelecionadoId] = useState(null);
@@ -85,8 +100,19 @@ const Pedido = () => {
         loadPedidosInfo();
     }, []);
 
+    const mostrarMensagemSucesso = (msg) => {
+        setMessageSuccess(msg);
+        setShowMessage(true);
+
+        setTimeout(() => {
+            setShowMessage(false);
+        }, 2000);
+    };
+
     const [versaoModal, setVersaoModal] = useState(0);
     const [avancando, setAvancando] = useState(false);
+
+    const pedidoSelecionado = pedidosInfo?.find((p) => p.id === pedidoSelecionadoId);
 
     const handleAvancar = async () => {
         if (avancando) return;
@@ -96,6 +122,7 @@ const Pedido = () => {
             await avancarStatusPedido(pedidoSelecionadoId);
             await Promise.all([loadPedidosInfo(), loadStats()]);
             setVersaoModal((v) => v + 1);
+            mostrarMensagemSucesso("Status do pedido atualizado com sucesso.");
         } catch (error) {
             alert(error.message || "Erro ao avançar o status do pedido.");
         } finally {
@@ -122,10 +149,18 @@ const Pedido = () => {
     });
 
 
-    const pedidoSelecionado = pedidosInfo?.find((p) => p.id === pedidoSelecionadoId);
-
     return (
         <div className={`${styles.pedidoContainer} p-4 d-flex flex-column gap-4 text-white`}>
+
+            {/* Mensagens de feedback */}
+
+            <div className={styles.containerMensagem}>
+                <div className={`${styles.mensagemSucesso} ${showMessage ? styles.show : ""}`}>
+                    <MSIcon name="check" size={16} fill={1} />
+                    <span>{messageSuccess}</span>
+                </div>
+            </div>
+
             <div className={`${styles.headerCard} p-4`}>
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
                     <div>

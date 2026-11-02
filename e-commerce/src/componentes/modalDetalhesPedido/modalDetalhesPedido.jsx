@@ -143,9 +143,16 @@ const ModalDetalhesPedido = (props) => {
                             type="button"
                             className={styles.btnPrimario}
                             onClick={props.onAvancar}
+
                             disabled={props.avancando || props.status === "entregue" || props.status === "devolvido"}
                         >
-                            {props.avancando ? "Avançando..." : "Avançar status →"}
+                            {props.status === "entregue"
+                                ? "Pedido já entregue"
+                                : props.status === "devolvido"
+                                    ? "Pedido já devolvido"
+                                    : props.avancando
+                                        ? "Avançando..."
+                                        : "Avançar status →"}
                         </button>
                     </div>
 

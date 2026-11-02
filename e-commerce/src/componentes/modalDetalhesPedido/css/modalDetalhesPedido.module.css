@@ -273,6 +273,12 @@
     transition: filter 0.15s ease;
 }
 
+.btnPrimario:disabled {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    cursor: not-allowed;
+}
+
 .btnPrimario:hover {
     filter: brightness(1.1);
 }
